@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 public class Field extends JPanel {
 
     private final int OFFSET = 30;
-    private final int SPACE = 20;
+    private final int SPACE = 50;
 
     private ArrayList tiles = new ArrayList();
     private Player player;
@@ -27,7 +27,7 @@ public class Field extends JPanel {
             "..........\n" +
             "..........\n" +
             "..........\n" +
-            ".....*....\n" +
+            "..........\n" +
             "..........\n" +
             "..........\n" +
             "..........\n";
@@ -84,7 +84,7 @@ public class Field extends JPanel {
         }
 
         player = new Player(0+ OFFSET,0+OFFSET, this);
-
+        calabash1 = new Calabash(SPACE + OFFSET,SPACE+OFFSET,this);
     }
 
     public void buildWorld(Graphics g) {
@@ -97,15 +97,17 @@ public class Field extends JPanel {
 
 
         world.add(player);
+        world.add(calabash1);
 
 
         for (int i = 0; i < world.size(); i++) {
 
             Thing2D item = (Thing2D) world.get(i);
 
-            if (item instanceof Player) {
+            if (item instanceof Player || item instanceof Calabash) {
                 g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
-            } else {
+            }
+            else {
                 g.drawImage(item.getImage(), item.x(), item.y(), this);
             }
 
