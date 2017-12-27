@@ -1,6 +1,7 @@
 package nju.java;
 
 import java.awt.Image;
+import java.util.Random;
 
 public class Thing2D {
 
@@ -8,13 +9,30 @@ public class Thing2D {
 
     private int x;
     private int y;
+    private int v;
+    private int indexV;
+
+
     private Image image;
 
     public Thing2D(int x, int y) {
         this.x = x;
         this.y = y;
+
+        Random rand = new Random();
+        v =rand.nextInt(4 ) + 1;
+        indexV=0;
     }
 
+    public int getV(){
+        if(++indexV == v){
+            indexV=0;
+            return 50;
+        }
+        else
+            return 0;
+
+    }
     public Image getImage() {
         return this.image;
     }

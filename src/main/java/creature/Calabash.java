@@ -32,7 +32,8 @@ public class Calabash extends Thing2D implements Runnable {
 
     public void run() {
         while (!Thread.interrupted()) {
-            this.move(50, 0);
+            Random rand = new Random();
+            this.move(getV(), 0);
             try {
 
                 Thread.sleep( 1000);

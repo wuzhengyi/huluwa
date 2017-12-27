@@ -7,7 +7,7 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Random;
 
-public class Grandpa extends Thing2D implements Runnable {
+public class Grandpa extends GoodThing2D implements Runnable {
     private Field field;
 
     public Grandpa(int x, int y, Field field) {
@@ -15,7 +15,7 @@ public class Grandpa extends Thing2D implements Runnable {
 
         this.field = field;
 
-        URL loc = this.getClass().getClassLoader().getResource("8.png");
+        URL loc = this.getClass().getClassLoader().getResource("grandpa.png");
         ImageIcon iia = new ImageIcon(loc);
         Image image = iia.getImage();
         this.setImage(image);
@@ -32,7 +32,7 @@ public class Grandpa extends Thing2D implements Runnable {
         while (!Thread.interrupted()) {
             Random rand = new Random();
 
-            this.move(rand.nextInt(10), rand.nextInt(10));
+            this.move(getV(), 0);
             try {
 
                 Thread.sleep(rand.nextInt(1000) + 1000);
