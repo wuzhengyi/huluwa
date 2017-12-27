@@ -7,17 +7,15 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Random;
 
-public class Calabash extends Thing2D implements Runnable {
+public class Grandpa extends Thing2D implements Runnable {
     private Field field;
-    private static int index = 1;
-    public Calabash(int x, int y, Field field) {
+
+    public Grandpa(int x, int y, Field field) {
         super(x, y);
 
         this.field = field;
 
-        URL loc = this.getClass().getClassLoader().getResource(index + ".png");
-        if(index > 7)
-            index = 1;
+        URL loc = this.getClass().getClassLoader().getResource("8.png");
         ImageIcon iia = new ImageIcon(loc);
         Image image = iia.getImage();
         this.setImage(image);
