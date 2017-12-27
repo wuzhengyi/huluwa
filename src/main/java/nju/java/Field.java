@@ -1,22 +1,30 @@
 package nju.java;
 
+import com.sun.xml.internal.bind.annotation.OverrideAnnotationOf;
 import creature.Calabash;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import javax.swing.JPanel;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import javax.swing.*;
 
-public class Field extends JPanel {
+public class Field extends JPanel implements ActionListener{
 
     private final int OFFSET = 30;
     private final int SPACE = 50;
+    private ExecutorService exec;
 
     private ArrayList tiles = new ArrayList();
+    private ArrayList creatures = new ArrayList();
     private Player player;
-    private Calabash calabash1;
+//    private Calabash calabash1;
 
     private int w = 0;
     private int h = 0;
@@ -24,13 +32,14 @@ public class Field extends JPanel {
 
     private String level =
             "..........\n" +
-            "..........\n" +
-            "..........\n" +
-            "..........\n" +
-            "..........\n" +
-            "..........\n" +
-            "..........\n" +
-            "..........\n";
+            ".*........\n" +
+            ".*........\n" +
+            ".*........\n" +
+            ".*........\n" +
+            ".*........\n" +
+            ".*........\n" +
+            ".*........\n" +
+            "..........\n" ;
 
     public Field() {
 
@@ -48,6 +57,7 @@ public class Field extends JPanel {
     }
 
     public final void initWorld() {
+        new Timer(1000, this).start();
 
         int x = OFFSET;
         int y = OFFSET;
@@ -57,6 +67,8 @@ public class Field extends JPanel {
 
         for (int i = 0; i < level.length(); i++) {
 
+            tiles.add(new Tile(x, y));
+
             char item = level.charAt(i);
 
             if (item == '\n') {
@@ -64,19 +76,18 @@ public class Field extends JPanel {
                 if (this.w < x) {
                     this.w = x;
                 }
-
                 x = OFFSET;
             } else if (item == '.') {
-                a = new Tile(x, y);
-                tiles.add(a);
                 x += SPACE;
             } else if (item == '@') {
                 player = new Player(x, y, this);
                 x += SPACE;
             } else if (item == ' ') {
                 x += SPACE;
-            } else if (item == '*') {
-                calabash1 = new Calabash(x, y, this);
+            } else if (item == 'c') {
+                x += SPACE;
+            } else if (item == '*'){
+                creatures.add(new Calabash(x, y, this));
                 x += SPACE;
             }
 
@@ -84,7 +95,12 @@ public class Field extends JPanel {
         }
 
         player = new Player(0+ OFFSET,0+OFFSET, this);
-        calabash1 = new Calabash(SPACE + OFFSET,SPACE+OFFSET,this);
+//        calabash1 = new Calabash(SPACE + OFFSET,SPACE+OFFSET,this);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        repaint();
+
     }
 
     public void buildWorld(Graphics g) {
@@ -94,10 +110,11 @@ public class Field extends JPanel {
 
         ArrayList world = new ArrayList();
         world.addAll(tiles);
+        world.addAll(creatures);
 
 
         world.add(player);
-        world.add(calabash1);
+//        world.add(calabash1);
 
 
         for (int i = 0; i < world.size(); i++) {
@@ -164,6 +181,16 @@ public class Field extends JPanel {
 
             } else if (key == KeyEvent.VK_R) {
                 restartLevel();
+            } else if (key == KeyEvent.VK_SPACE) {
+                exec = Executors.newCachedThreadPool();
+
+
+                for ( int i=0; i<creatures.size(); i++){
+                    exec.execute((Calabash) creatures.get(i));
+                }
+//                TimeUnit.SECONDS.sleep(5); // Run for a while...
+//                exec.shutdownNow(); // Interrupt all tasks
+
             }
 
             repaint();

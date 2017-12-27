@@ -15,7 +15,7 @@ public class Calabash extends Thing2D implements Runnable {
 
         this.field = field;
 
-        URL loc = this.getClass().getClassLoader().getResource(index + ".png");
+        URL loc = this.getClass().getClassLoader().getResource((index++) + ".png");
         if(index > 7)
             index = 1;
         ImageIcon iia = new ImageIcon(loc);
@@ -32,17 +32,18 @@ public class Calabash extends Thing2D implements Runnable {
 
     public void run() {
         while (!Thread.interrupted()) {
-            Random rand = new Random();
-
-            this.move(rand.nextInt(10), rand.nextInt(10));
+            this.move(50, 0);
             try {
 
-                Thread.sleep(rand.nextInt(1000) + 1000);
+                Thread.sleep( 1000);
+                notify();
                 this.field.repaint();
 
             } catch (Exception e) {
 
             }
+
+
         }
     }
 }
