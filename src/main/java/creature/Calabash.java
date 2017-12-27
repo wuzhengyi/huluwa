@@ -7,7 +7,7 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Random;
 
-public class Calabash extends Thing2D implements Runnable {
+public class Calabash extends GoodThing2D implements Runnable {
     private Field field;
     private static int index = 1;
     public Calabash(int x, int y, Field field) {
@@ -23,17 +23,10 @@ public class Calabash extends Thing2D implements Runnable {
         this.setImage(image);
     }
 
-    public void move(int x, int y) {
-        int nx = this.x() + x;
-        int ny = this.y() + y;
-        this.setX(nx);
-        this.setY(ny);
-    }
-
     public void run() {
         while (!Thread.interrupted()) {
             Random rand = new Random();
-            this.move(getV(), 0);
+            super.move(getVx(), getVy());
             try {
 
                 Thread.sleep( 1000);

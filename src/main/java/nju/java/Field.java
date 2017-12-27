@@ -20,8 +20,10 @@ public class Field extends JPanel implements ActionListener {
     private ExecutorService exec;
 
     private ArrayList tiles = new ArrayList();
-    private ArrayList Badcreatures = new ArrayList();
-    private ArrayList Goodcreatures = new ArrayList();
+    private ArrayList badCreatures = new ArrayList();
+    private ArrayList goodCreatures = new ArrayList();
+    private Timer timer = new Timer(100, new TimerListener());
+
 //    private Player player;
 //    private Calabash calabash1;
 
@@ -34,11 +36,11 @@ public class Field extends JPanel implements ActionListener {
                     ".*......m.\n" +
                     ".*......m.\n" +
                     ".*.....s..\n" +
-                    "g*....n...\n" +
+                    ".*....n...\n" +
                     ".*......m.\n" +
                     ".*......m.\n" +
                     ".*......m.\n" +
-                    "..........\n";
+                    ".g........\n";
 
     public Field() {
 
@@ -56,8 +58,8 @@ public class Field extends JPanel implements ActionListener {
     }
 
     public final void initWorld() {
-        new Timer(1000, this).start();
-
+        //new Timer(1000, this).start();
+        timer.start();
         int x = OFFSET;
         int y = OFFSET;
 
@@ -83,19 +85,19 @@ public class Field extends JPanel implements ActionListener {
             } else if (item == 'c') {
                 x += SPACE;
             } else if (item == '*') {
-                Goodcreatures.add(new Calabash(x, y, this));
+                goodCreatures.add(new Calabash(x, y, this));
                 x += SPACE;
             } else if (item == 'g') {
-                Goodcreatures.add(new Grandpa(x, y, this));
+                goodCreatures.add(new Grandpa(x, y, this));
                 x += SPACE;
             } else if (item == 'n') {
-                Badcreatures.add(new Snake(x, y, this));
+                badCreatures.add(new Snake(x, y, this));
                 x += SPACE;
             } else if (item == 's') {
-                Badcreatures.add(new Scorpion(x, y, this));
+                badCreatures.add(new Scorpion(x, y, this));
                 x += SPACE;
             } else if (item == 'm') {
-                Badcreatures.add(new Minion(x, y, this));
+                badCreatures.add(new Minion(x, y, this));
                 x += SPACE;
             }
 
@@ -118,8 +120,8 @@ public class Field extends JPanel implements ActionListener {
 
         ArrayList world = new ArrayList();
         world.addAll(tiles);
-        world.addAll(Badcreatures);
-        world.addAll(Goodcreatures);
+        world.addAll(badCreatures);
+        world.addAll(goodCreatures);
 
 //        world.add(player);
 //        world.add(calabash1);
@@ -183,17 +185,48 @@ public class Field extends JPanel implements ActionListener {
                 restartLevel();
             } else if (key == KeyEvent.VK_SPACE) {
                 exec = Executors.newCachedThreadPool();
-                for (int i = 0; i < Badcreatures.size(); i++) {
-                    Thing2dStart((Thing2D) Badcreatures.get(i), exec);
+                for (int i = 0; i < badCreatures.size(); i++) {
+                    Thing2dStart((Thing2D) badCreatures.get(i), exec);
                 }
-                for (int i = 0; i < Goodcreatures.size(); i++) {
-                    Thing2dStart((Thing2D) Goodcreatures.get(i), exec);
+                for (int i = 0; i < goodCreatures.size(); i++) {
+                    Thing2dStart((Thing2D) goodCreatures.get(i), exec);
                 }
 //                TimeUnit.SECONDS.sleep(5); // Run for a while...
 //                exec.shutdownNow(); // Interrupt all tasks
             }
             repaint();
         }
+    }
+
+    private boolean CollisionDetection(Thing2D item1,Thing2D item2){
+        if(Math.abs(item1.x() - item2.x()) < SPACE && Math.abs(item1.y() - item2.y()) < SPACE)
+            return true;
+        return false;
+    }
+
+    class TimerListener implements ActionListener{
+        public void actionPerformed(ActionEvent e) {
+            for(int i=0;i<badCreatures.size();i++){
+                for(int j=0;j<goodCreatures.size();j++){
+                    Thing2D item1 = (Thing2D) badCreatures.get(i);
+                    Thing2D item2 = (Thing2D) goodCreatures.get(j);
+                    if(CollisionDetection(item1,item2)){
+                        if(Math.abs(item1.getVx()) < Math.abs(item2.getVx())){
+                            goodCreatures.remove(j);
+                        }
+                        else if(Math.abs(item1.getVx()) == Math.abs(item2.getVx())){
+                            badCreatures.remove(i);
+                            goodCreatures.remove(j);
+                        }
+                        else if(Math.abs(item1.getVx()) > Math.abs(item2.getVx())){
+                            badCreatures.remove(i);
+                        }
+                    }
+                }
+            }
+
+        }
+
     }
 
 

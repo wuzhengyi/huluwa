@@ -5,12 +5,14 @@ import java.util.Random;
 
 public class Thing2D {
 
-    private final int SPACE = 20;
+    public final int SPACE = 50;
 
     private int x;
     private int y;
-    private int v;
-    private int indexV;
+    private int vx;
+    private int indexVx;
+    private int vy;
+    private int indexVy;
 
 
     private Image image;
@@ -20,19 +22,30 @@ public class Thing2D {
         this.y = y;
 
         Random rand = new Random();
-        v =rand.nextInt(4 ) + 1;
-        indexV=0;
+        setVx(rand.nextInt(4 ) + 1);
+        setVy(500);
     }
 
-    public int getV(){
-        if(++indexV == v){
-            indexV=0;
-            return 50;
+    public int getVx(){
+        if(++indexVx == vx){
+            indexVx =0;
+            return SPACE;
         }
         else
             return 0;
 
     }
+
+    public int getVy(){
+        if(++indexVy >= vy){
+            indexVy =0;
+            return SPACE;
+        }
+        else
+            return 0;
+
+    }
+
     public Image getImage() {
         return this.image;
     }
@@ -56,6 +69,10 @@ public class Thing2D {
     public void setY(int y) {
         this.y = y;
     }
+
+    public void setVy(int vy) {this.vy = vy; indexVy = 0;}
+
+    public void setVx(int vx) {this.vx = vx; indexVx = 0;}
 
 
 } 
