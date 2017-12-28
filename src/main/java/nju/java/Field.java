@@ -206,23 +206,40 @@ public class Field extends JPanel implements ActionListener {
 
     class TimerListener implements ActionListener{
         public void actionPerformed(ActionEvent e) {
+            boolean allStop = true;
+            /*碰撞检测*/
             for(int i=0;i<badCreatures.size();i++){
                 for(int j=0;j<goodCreatures.size();j++){
                     Thing2D item1 = (Thing2D) badCreatures.get(i);
                     Thing2D item2 = (Thing2D) goodCreatures.get(j);
+                    if((item1.x()!=OFFSET && item1.x()!=w)||(item2.x()!=OFFSET && item2.x()!=w))
+                        allStop=false;
                     if(CollisionDetection(item1,item2)){
-                        if(Math.abs(item1.getVx()) < Math.abs(item2.getVx())){
+                        if(Math.abs(item1.vx()) < Math.abs(item2.vx())){
                             goodCreatures.remove(j);
                         }
-                        else if(Math.abs(item1.getVx()) == Math.abs(item2.getVx())){
+                        else if(Math.abs(item1.vx()) == Math.abs(item2.vx())){
                             badCreatures.remove(i);
                             goodCreatures.remove(j);
                         }
-                        else if(Math.abs(item1.getVx()) > Math.abs(item2.getVx())){
+                        else if(Math.abs(item1.vx()) > Math.abs(item2.vx())){
                             badCreatures.remove(i);
                         }
                     }
                 }
+            }
+
+            //如果都达到了各自的终点，就让他们再碰撞一次
+            if(allStop){
+                for(int i=0;i<goodCreatures.size();i++){
+                    ((Thing2D)goodCreatures.get(i)).setVy(OFFSET + SPACE * i);
+                    ((Thing2D)goodCreatures.get(i)).setReverse();
+                }
+                for(int i=0;i<badCreatures.size();i++){
+                    ((Thing2D)badCreatures.get(i)).setVy(OFFSET + SPACE * i);
+                    ((Thing2D)badCreatures.get(i)).setReverse();
+                }
+
             }
 
         }

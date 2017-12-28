@@ -13,6 +13,7 @@ public class Thing2D {
     private int indexVx;
     private int vy;
     private int indexVy;
+    private boolean reverse = false;
 
 
     private Image image;
@@ -24,12 +25,13 @@ public class Thing2D {
         Random rand = new Random();
         setVx(rand.nextInt(4 ) + 1);
         setVy(500);
+        reverse = false;
     }
 
     public int getVx(){
         if(++indexVx == vx){
             indexVx =0;
-            return SPACE;
+            return SPACE * (reverse ? -1 : 1);
         }
         else
             return 0;
@@ -74,5 +76,9 @@ public class Thing2D {
 
     public void setVx(int vx) {this.vx = vx; indexVx = 0;}
 
+    public int vx() {return this.vx;}
 
+    public int vy() {return this.vy;}
+
+    public void setReverse(){reverse = !reverse;}
 } 
