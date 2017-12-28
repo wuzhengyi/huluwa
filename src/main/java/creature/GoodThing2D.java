@@ -21,7 +21,7 @@ public class GoodThing2D extends Thing2D{
     }
 
     @Override
-    public int getVx(){
-        return super.getVx();
+    public int getV(){
+        return super.getV();
     }
 }

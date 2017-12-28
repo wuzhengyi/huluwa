@@ -2,8 +2,7 @@ package nju.java;
 
 import creature.*;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -15,17 +14,18 @@ import javax.swing.*;
 
 public class Field extends JPanel implements ActionListener {
 
-    private final int OFFSET = 30;
-    private final int SPACE = 50;
+    private static int OFFSET = 30;
+    private static int SPACE = 50;
     private ExecutorService exec;
 
     private ArrayList tiles = new ArrayList();
     private ArrayList badCreatures = new ArrayList();
     private ArrayList goodCreatures = new ArrayList();
+    private boolean locked = false;
     private Timer timer = new Timer(100, new TimerListener());
 
-//    private Player player;
-//    private Calabash calabash1;
+    //    private Player player;
+    //    private Calabash calabash1;
 
     private int w = 0;
     private int h = 0;
@@ -33,14 +33,14 @@ public class Field extends JPanel implements ActionListener {
 
     private String level =
             "..........\n" +
-                    ".*......m.\n" +
-                    ".*......m.\n" +
-                    ".*.....s..\n" +
-                    ".*....n...\n" +
-                    ".*......m.\n" +
-                    ".*......m.\n" +
-                    ".*......m.\n" +
-                    ".g........\n";
+            ".*......m.\n" +
+            ".*.....m..\n" +
+            ".*....s...\n" +
+            ".*....n...\n" +
+            ".*.....m..\n" +
+            ".*......m.\n" +
+            ".*.......m\n" +
+            ".g........\n";
 
     public Field() {
 
@@ -57,55 +57,60 @@ public class Field extends JPanel implements ActionListener {
         return this.h;
     }
 
+//    public static Point getPoint(int x, int y){
+//        return new Point(OFFSET + x * SPACE,OFFSET + y * SPACE);
+//    }
+
+    public static int getPointX(int x){return x * SPACE + OFFSET;}
+
+    public static int getPointY(int y){return y * SPACE + OFFSET;}
+
     public final void initWorld() {
         //new Timer(1000, this).start();
         timer.start();
-        int x = OFFSET;
-        int y = OFFSET;
+        goodCreatures.clear();
+        badCreatures.clear();
+//        if(!exec.isShutdown())
+//            exec.shutdownNow();
+        int x = 0;
+        int y = 0;
 
         for (int i = 0; i < level.length(); i++) {
-
+            //铺上草地
             tiles.add(new Tile(x, y));
 
             char item = level.charAt(i);
 
             if (item == '\n') {
-                y += SPACE;
-                if (this.w < x) {
-                    this.w = x;
+                y++;
+                if (this.w < getPointX(x)) {
+                    this.w = getPointX(x);
                 }
-                x = OFFSET;
+                x = 0;
             } else if (item == '.') {
-                x += SPACE;
-            } else if (item == '@') {
-//                player = new Player(x, y, this);
-                x += SPACE;
-            } else if (item == ' ') {
-                x += SPACE;
+                x++;
             } else if (item == 'c') {
-                x += SPACE;
+                x++;
             } else if (item == '*') {
                 goodCreatures.add(new Calabash(x, y, this));
-                x += SPACE;
+                x++;
             } else if (item == 'g') {
                 goodCreatures.add(new Grandpa(x, y, this));
-                x += SPACE;
+                x++;
             } else if (item == 'n') {
                 badCreatures.add(new Snake(x, y, this));
-                x += SPACE;
+                x++;
             } else if (item == 's') {
                 badCreatures.add(new Scorpion(x, y, this));
-                x += SPACE;
+                x++;
             } else if (item == 'm') {
                 badCreatures.add(new Minion(x, y, this));
-                x += SPACE;
+                x++;
             }
 
-            h = y;
+            h = getPointY(y);
         }
 
-//        player = new Player(0 + OFFSET, 0 + OFFSET, this);
-//        calabash1 = new Calabash(SPACE + OFFSET,SPACE+OFFSET,this);
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -123,9 +128,8 @@ public class Field extends JPanel implements ActionListener {
         world.addAll(badCreatures);
         world.addAll(goodCreatures);
 
-//        world.add(player);
-//        world.add(calabash1);
-
+        //        world.add(player);
+        //        world.add(calabash1);
 
         for (int i = 0; i < world.size(); i++) {
 
@@ -151,16 +155,16 @@ public class Field extends JPanel implements ActionListener {
         buildWorld(g);
     }
 
-    private void Thing2dStart(Thing2D item,ExecutorService exec){
-        if(item instanceof Calabash)
+    private void Thing2dStart(Thing2D item, ExecutorService exec) {
+        if (item instanceof Calabash)
             exec.execute((Calabash) item);
-        else if(item instanceof Grandpa)
+        else if (item instanceof Grandpa)
             exec.execute((Grandpa) item);
-        else if(item instanceof Snake)
+        else if (item instanceof Snake)
             exec.execute((Snake) item);
-        else if(item instanceof Scorpion)
+        else if (item instanceof Scorpion)
             exec.execute((Scorpion) item);
-        else if(item instanceof Minion)
+        else if (item instanceof Minion)
             exec.execute((Minion) item);
     }
 
@@ -172,15 +176,15 @@ public class Field extends JPanel implements ActionListener {
             }
             int key = e.getKeyCode();
             if (key == KeyEvent.VK_LEFT) {
-//                player.move(-SPACE, 0);
+                //                player.move(-SPACE, 0);
             } else if (key == KeyEvent.VK_RIGHT) {
-//                player.move(SPACE, 0);
+                //                player.move(SPACE, 0);
             } else if (key == KeyEvent.VK_UP) {
-//                player.move(0, -SPACE);
+                //                player.move(0, -SPACE);
             } else if (key == KeyEvent.VK_DOWN) {
-//                player.move(0, SPACE);
+                //                player.move(0, SPACE);
             } else if (key == KeyEvent.VK_S) {
-//                new Thread(player).start();
+                //                new Thread(player).start();
             } else if (key == KeyEvent.VK_R) {
                 restartLevel();
             } else if (key == KeyEvent.VK_SPACE) {
@@ -191,65 +195,80 @@ public class Field extends JPanel implements ActionListener {
                 for (int i = 0; i < goodCreatures.size(); i++) {
                     Thing2dStart((Thing2D) goodCreatures.get(i), exec);
                 }
-//                TimeUnit.SECONDS.sleep(5); // Run for a while...
-//                exec.shutdownNow(); // Interrupt all tasks
+                //                TimeUnit.SECONDS.sleep(5); // Run for a while...
+                //                exec.shutdownNow(); // Interrupt all tasks
             }
             repaint();
         }
     }
 
-    private boolean CollisionDetection(Thing2D item1,Thing2D item2){
-        if(Math.abs(item1.x() - item2.x()) < SPACE && Math.abs(item1.y() - item2.y()) < SPACE)
+    private boolean collisionDetection(Thing2D item1, Thing2D item2) {
+        if (Math.abs(item1.x() - item2.x()) < SPACE && Math.abs(item1.y() - item2.y()) < SPACE)
             return true;
         return false;
     }
 
-    class TimerListener implements ActionListener{
-        public void actionPerformed(ActionEvent e) {
-            boolean allStop = true;
-            /*碰撞检测*/
-            for(int i=0;i<badCreatures.size();i++){
-                for(int j=0;j<goodCreatures.size();j++){
-                    Thing2D item1 = (Thing2D) badCreatures.get(i);
-                    Thing2D item2 = (Thing2D) goodCreatures.get(j);
-                    if((item1.x()!=OFFSET && item1.x()!=w)||(item2.x()!=OFFSET && item2.x()!=w))
-                        allStop=false;
-                    if(CollisionDetection(item1,item2)){
-                        if(Math.abs(item1.vx()) < Math.abs(item2.vx())){
-                            goodCreatures.remove(j);
-                        }
-                        else if(Math.abs(item1.vx()) == Math.abs(item2.vx())){
-                            badCreatures.remove(i);
-                            goodCreatures.remove(j);
-                        }
-                        else if(Math.abs(item1.vx()) > Math.abs(item2.vx())){
-                            badCreatures.remove(i);
-                        }
+    private boolean collisionAllDetection(){
+        boolean allStop = true;
+        for (int i = 0; i < badCreatures.size(); i++) {
+            for (int j = 0; j < goodCreatures.size(); j++) {
+                Thing2D item2 = (Thing2D) goodCreatures.get(j);
+                Thing2D item1 = (Thing2D) badCreatures.get(i);
+                if ((item1.x() != getPointX(0) && item1.x() != getPointX(10)) || (item2.x() != getPointX(0) && item2.x() != getPointX(10)))
+                    allStop = false;
+                if (collisionDetection(item1, item2)) {
+                    if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
+                        goodCreatures.remove(j);
+                    } else if (Math.abs(item1.vx()) == Math.abs(item2.vx())) {
+                        badCreatures.remove(i);
+                        goodCreatures.remove(j);
+                    } else if (Math.abs(item1.vx()) > Math.abs(item2.vx())) {
+                        badCreatures.remove(i);
                     }
                 }
             }
+        }
+        return allStop;
+    }
 
-            //如果都达到了各自的终点，就让他们再碰撞一次
-            if(allStop){
-                for(int i=0;i<goodCreatures.size();i++){
-                    ((Thing2D)goodCreatures.get(i)).setVy(OFFSET + SPACE * i);
-                    ((Thing2D)goodCreatures.get(i)).setReverse();
+    private void sortCreatures(ArrayList Creatures){
+        for (int i = 0; i < Creatures.size(); i++) {
+            ((Thing2D) Creatures.get(i)).setY(getPointY(i));
+            ((Thing2D) Creatures.get(i)).setReverse();
+        }
+    }
+
+    class TimerListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            while (locked);
+            locked = true;
+
+            /*碰撞检测*/
+            boolean allStop = collisionAllDetection();
+
+            //反复进攻
+            if (allStop) {
+                if(goodCreatures.size()==0 || badCreatures.size()==0){
+                    completed = true;
+                    repaint();
+                    locked = false;
+                    return;
                 }
-                for(int i=0;i<badCreatures.size();i++){
-                    ((Thing2D)badCreatures.get(i)).setVy(OFFSET + SPACE * i);
-                    ((Thing2D)badCreatures.get(i)).setReverse();
-                }
+
+                sortCreatures(goodCreatures);
+                sortCreatures(badCreatures);
 
             }
+            locked = false;
 
         }
 
     }
 
-
     public void restartLevel() {
         tiles.clear();
         initWorld();
+        timer.stop();
         if (completed) {
             completed = false;
         }

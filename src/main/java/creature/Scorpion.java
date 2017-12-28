@@ -25,7 +25,7 @@ public class Scorpion extends BadThing2D implements Runnable {
         while (!Thread.interrupted()) {
             Random rand = new Random();
 
-            super.move(getVx(), getVy());
+            super.move(getV(), 0);
             try {
 
                 Thread.sleep(rand.nextInt(1000) + 1000);

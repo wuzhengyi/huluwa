@@ -9,39 +9,27 @@ public class Thing2D {
 
     private int x;
     private int y;
-    private int vx;
-    private int indexVx;
-    private int vy;
-    private int indexVy;
+    private int v;
+    private int indexV;
     private boolean reverse = false;
 
 
     private Image image;
 
     public Thing2D(int x, int y) {
-        this.x = x;
-        this.y = y;
-
+//        this.x = x;
+//        this.y = y;
+        this.x = Field.getPointX(x);
+        this.y = Field.getPointY(y);
         Random rand = new Random();
-        setVx(rand.nextInt(4 ) + 1);
-        setVy(500);
+        setV(rand.nextInt(4 ) + 1);
         reverse = false;
     }
 
-    public int getVx(){
-        if(++indexVx == vx){
-            indexVx =0;
+    public int getV(){
+        if(++indexV == v){
+            indexV =0;
             return SPACE * (reverse ? -1 : 1);
-        }
-        else
-            return 0;
-
-    }
-
-    public int getVy(){
-        if(++indexVy >= vy){
-            indexVy =0;
-            return SPACE;
         }
         else
             return 0;
@@ -72,13 +60,9 @@ public class Thing2D {
         this.y = y;
     }
 
-    public void setVy(int vy) {this.vy = vy; indexVy = 0;}
+    public void setV(int v) {this.v = v; indexV = 0;}
 
-    public void setVx(int vx) {this.vx = vx; indexVx = 0;}
-
-    public int vx() {return this.vx;}
-
-    public int vy() {return this.vy;}
+    public int vx() {return this.v;}
 
     public void setReverse(){reverse = !reverse;}
 } 

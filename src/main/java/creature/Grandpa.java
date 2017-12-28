@@ -12,7 +12,7 @@ public class Grandpa extends GoodThing2D implements Runnable {
 
     public Grandpa(int x, int y, Field field) {
         super(x, y);
-
+        setV(1);
         this.field = field;
 
         URL loc = this.getClass().getClassLoader().getResource("grandpa.png");
@@ -25,7 +25,7 @@ public class Grandpa extends GoodThing2D implements Runnable {
         while (!Thread.interrupted()) {
             Random rand = new Random();
 
-            super.move(getVx(), getVy());
+            super.move(getV(), 0);
             try {
 
                 Thread.sleep(rand.nextInt(1000) + 1000);
