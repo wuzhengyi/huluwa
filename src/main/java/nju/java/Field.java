@@ -16,12 +16,13 @@ public class Field extends JPanel implements ActionListener {
 
     private static int OFFSET = 30;
     private static int SPACE = 50;
+    private int row, column = 0;
     private ExecutorService exec;
+    private int fieldArray[][];
 
     private ArrayList tiles = new ArrayList();
     private ArrayList badCreatures = new ArrayList();
     private ArrayList goodCreatures = new ArrayList();
-    private boolean locked = false;
     private Timer timer = new Timer(100, new TimerListener());
 
     //    private Player player;
@@ -29,18 +30,19 @@ public class Field extends JPanel implements ActionListener {
 
     private int w = 0;
     private int h = 0;
+    private boolean isStart = false;
     private boolean completed = false;
 
     private String level =
-            "..........\n" +
-            ".*......m.\n" +
-            ".*.....m..\n" +
-            ".*....s...\n" +
-            ".*....n...\n" +
-            ".*.....m..\n" +
-            ".*......m.\n" +
-            ".*.......m\n" +
-            ".g........\n";
+            ".........\n" +
+            "*......m.\n" +
+            "*.....m..\n" +
+            "*....s...\n" +
+            "*....n...\n" +
+            "*.....m..\n" +
+            "*......m.\n" +
+            "*.......m\n" +
+            "g........\n";
 
     public Field() {
 
@@ -63,28 +65,35 @@ public class Field extends JPanel implements ActionListener {
 
     public static int getPointX(int x){return x * SPACE + OFFSET;}
 
+    public static int getindexX(int x){return (x - OFFSET)/ SPACE;}
+
+    public static int getindexY(int y){return (y - OFFSET)/ SPACE;}
+
     public static int getPointY(int y){return y * SPACE + OFFSET;}
 
     public final void initWorld() {
-        //new Timer(1000, this).start();
+
         timer.start();
         goodCreatures.clear();
         badCreatures.clear();
-//        if(!exec.isShutdown())
-//            exec.shutdownNow();
+        isStart = false;
+        completed = false;
+
         int x = 0;
         int y = 0;
 
         for (int i = 0; i < level.length(); i++) {
             //铺上草地
-            tiles.add(new Tile(x, y));
+
 
             char item = level.charAt(i);
-
+            if (item != '\n')
+                tiles.add(new Tile(x, y));
             if (item == '\n') {
                 y++;
                 if (this.w < getPointX(x)) {
                     this.w = getPointX(x);
+                    column = x;
                 }
                 x = 0;
             } else if (item == '.') {
@@ -110,8 +119,30 @@ public class Field extends JPanel implements ActionListener {
 
             h = getPointY(y);
         }
-
+        row = x;
+        column = y;
+        initFieldArray();
     }
+
+    private void initFieldArray(){
+
+        fieldArray = new int[row][column];
+
+        for(int i=0;i<row;i++)
+            for(int j=0;j<column;j++)
+                fieldArray[i][j]=0;
+
+        for (int i = 0; i < badCreatures.size(); i++) {
+            for (int j = 0; j < goodCreatures.size(); j++) {
+                Thing2D item2 = (Thing2D) goodCreatures.get(j);
+                Thing2D item1 = (Thing2D) badCreatures.get(i);
+                fieldArray[getindexX(item1.x())][getindexY(item1.y())] = -1;
+                fieldArray[getindexX(item2.x())][getindexY(item2.y())] = 1;
+            }
+        }
+    }
+
+    public Point
 
     public void actionPerformed(ActionEvent e) {
         repaint();
@@ -127,9 +158,6 @@ public class Field extends JPanel implements ActionListener {
         world.addAll(tiles);
         world.addAll(badCreatures);
         world.addAll(goodCreatures);
-
-        //        world.add(player);
-        //        world.add(calabash1);
 
         for (int i = 0; i < world.size(); i++) {
 
@@ -190,6 +218,9 @@ public class Field extends JPanel implements ActionListener {
             } else if (key == KeyEvent.VK_R) {
                 restartLevel();
             } else if (key == KeyEvent.VK_SPACE) {
+                if(isStart)
+                    return;
+                isStart = true;
                 exec = Executors.newCachedThreadPool();
                 for (int i = 0; i < badCreatures.size(); i++) {
                     Thing2dStart((Thing2D) badCreatures.get(i), exec);
@@ -217,7 +248,7 @@ public class Field extends JPanel implements ActionListener {
 
                     Thing2D item2 = (Thing2D) goodCreatures.get(j);
                     Thing2D item1 = (Thing2D) badCreatures.get(i);
-                    if ((item1.x() != getPointX(0) && item1.x() != getPointX(10)) || (item2.x() != getPointX(0) && item2.x() != getPointX(10)))
+                    if ((item1.x() != getPointX(0) && item1.x() != getPointX(column)) || (item2.x() != getPointX(0) && item2.x() != getPointX(column)))
                         allStop = false;
                     if (collisionDetection(item1, item2)) {
                         if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
@@ -244,9 +275,6 @@ public class Field extends JPanel implements ActionListener {
 
     class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            while (locked);
-            locked = true;
-
             /*碰撞检测*/
             boolean allStop = collisionAllDetection();
 
@@ -256,7 +284,6 @@ public class Field extends JPanel implements ActionListener {
                     completed = true;
                     timer.stop();
                     repaint();
-                    locked = false;
                     return;
                 }
 
@@ -264,10 +291,7 @@ public class Field extends JPanel implements ActionListener {
                 sortCreatures(badCreatures);
 
             }
-            locked = false;
-
         }
-
     }
 
     public void restartLevel() {
