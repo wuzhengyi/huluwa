@@ -7,11 +7,11 @@ import java.awt.*;
 import java.net.URL;
 import java.util.Random;
 
-public class Scorpion extends BadThing2D implements Runnable {
+public class Scorpion extends Creature{
     private Field field;
 
     public Scorpion(int x, int y, Field field) {
-        super(x, y);
+        super(x, y, field);
 
         this.field = field;
 
@@ -21,19 +21,4 @@ public class Scorpion extends BadThing2D implements Runnable {
         this.setImage(image);
     }
 
-    public void run() {
-        while (!Thread.interrupted()) {
-            Random rand = new Random();
-
-            super.move(getV(), 0);
-            try {
-
-                Thread.sleep(rand.nextInt(1000) + 1000);
-                this.field.repaint();
-
-            } catch (Exception e) {
-
-            }
-        }
-    }
 }

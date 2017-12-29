@@ -1,5 +1,8 @@
 package nju.java;
 
+import creature.BadThing2D;
+import creature.GoodThing2D;
+
 import java.awt.Image;
 import java.util.Random;
 
@@ -9,8 +12,8 @@ public class Thing2D {
 
     private int x;
     private int y;
-    private int v;
-    private int indexV;
+    public boolean isDied = true;
+    public boolean isFighting = false;
     private boolean reverse = false;
 
 
@@ -24,16 +27,8 @@ public class Thing2D {
         Random rand = new Random();
         setV(rand.nextInt(4 ) + 1);
         reverse = false;
-    }
-
-    public int getV(){
-        if(++indexV == v){
-            indexV =0;
-            return SPACE * (reverse ? -1 : 1);
-        }
-        else
-            return 0;
-
+        isDied = true;
+        isFighting = false;
     }
 
     public Image getImage() {

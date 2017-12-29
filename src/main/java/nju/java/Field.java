@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import javax.swing.*;
 
 public class Field extends JPanel implements ActionListener {
-
+    public static final int INF = 1000000;
     private static int OFFSET = 30;
     private static int SPACE = 50;
     private int row, column = 0;
@@ -59,15 +59,86 @@ public class Field extends JPanel implements ActionListener {
         return this.h;
     }
 
-//    public static Point getPoint(int x, int y){
-//        return new Point(OFFSET + x * SPACE,OFFSET + y * SPACE);
-//    }
+    synchronized public void CreatureMove(Thing2D item){
+//        PrintFieldArray();
+        if(item.isDied || item.isFighting)
+            return;
+        Thing2D target = GetTarget(item);
+        if(target == null)
+            return;
+        CreatureMoveToTarget(item,target);
+        if(GetDistance(item,target) == SPACE){
+            item.isFighting = true;
+        }
+//        System.out.println(GetDistance(item,target));
+        repaint();
+    }
+
+    synchronized private void CreatureMoveToTarget(Thing2D item, Thing2D target){
+        int x = getIndexX(item.x());
+        int y = getIndexY(item.y());
+        int dx = target.x() - item.x();
+        int dy = target.y() - item.y();
+        if(dx < 0 && x > 0 && fieldArray[x - 1][y] == 0){
+            fieldArray[x-1][y] = fieldArray[x][y];
+            fieldArray[x][y] = 0;
+            item.setX(getPointX(x-1));
+        }
+        else if(dx > 0 && x < column - 1 && fieldArray[x + 1][y] == 0){
+            fieldArray[x+1][y] = fieldArray[x][y];
+            fieldArray[x][y] = 0;
+            item.setX(getPointX(x+1));
+        }
+        else if(dy < 0 && y > 0 && fieldArray[x][y - 1] == 0){
+            fieldArray[x][y-1] = fieldArray[x][y];
+            fieldArray[x][y] = 0;
+            item.setY(getPointY(y-1));
+        }
+        else if(dy > 0 && x < row - 1 && fieldArray[x][y + 1] == 0){
+            fieldArray[x][y+1] = fieldArray[x][y];
+            fieldArray[x][y] = 0;
+            item.setY(getPointY(y+1));
+        }
+    }
+
+    synchronized private Thing2D GetTarget(Thing2D item){
+        Thing2D target = null;
+        int distance = INF;
+        if(item instanceof GoodThing2D){
+            for(int i = 0;i<badCreatures.size();i++){
+                BadThing2D temp = (BadThing2D)badCreatures.get(i);
+                if(temp.isFighting || temp.isDied)
+                    continue;
+                if(GetDistance(item,temp)<distance){
+                    target = temp;
+                    distance = GetDistance(item,target);
+                }
+            }
+        }
+        else if(item instanceof BadThing2D){
+            for(int i = 0;i<goodCreatures.size();i++){
+                GoodThing2D temp = (GoodThing2D)goodCreatures.get(i);
+                if(temp.isFighting || temp.isDied)
+                    continue;
+                if(GetDistance(item,temp)<distance){
+                    target = temp;
+                    distance = GetDistance(item,target);
+                }
+            }
+        }
+//        System.out.println("进攻：[" + getIndexX(item.x())+"][" + getIndexY(item.y()) + "] --> [" + getIndexX(target.x())+"][" + getIndexY(target.y()) + "]");
+        return target;
+    }
+
+    public int GetDistance(Thing2D item1, Thing2D item2){
+        return (int)Math.sqrt((item1.x()-item2.x())*(item1.x()-item2.x()) + (item1.y()-item2.y())*(item1.y()-item2.y()));
+    }
 
     public static int getPointX(int x){return x * SPACE + OFFSET;}
 
-    public static int getindexX(int x){return (x - OFFSET)/ SPACE;}
+    public static int getIndexX(int x){return (x - OFFSET)/ SPACE;}
 
-    public static int getindexY(int y){return (y - OFFSET)/ SPACE;}
+    public static int getIndexY(int y){return (y - OFFSET)/ SPACE;}
 
     public static int getPointY(int y){return y * SPACE + OFFSET;}
 
@@ -119,31 +190,42 @@ public class Field extends JPanel implements ActionListener {
 
             h = getPointY(y);
         }
-        row = x;
-        column = y;
+        row = y;
         initFieldArray();
     }
 
     private void initFieldArray(){
 
-        fieldArray = new int[row][column];
+        fieldArray = new int[column][row];
 
         for(int i=0;i<row;i++)
             for(int j=0;j<column;j++)
                 fieldArray[i][j]=0;
 
-        for (int i = 0; i < badCreatures.size(); i++) {
-            for (int j = 0; j < goodCreatures.size(); j++) {
-                Thing2D item2 = (Thing2D) goodCreatures.get(j);
-                Thing2D item1 = (Thing2D) badCreatures.get(i);
-                fieldArray[getindexX(item1.x())][getindexY(item1.y())] = -1;
-                fieldArray[getindexX(item2.x())][getindexY(item2.y())] = 1;
-            }
+        for (int j = 0; j < goodCreatures.size(); j++) {
+            GoodThing2D item2 = (GoodThing2D) goodCreatures.get(j);
+            int x = getIndexX(item2.x());
+            int y = getIndexY(item2.y());
+            fieldArray[x][y] = 1;
         }
+
+        for (int i = 0; i < badCreatures.size(); i++) {
+            BadThing2D item1 = (BadThing2D) badCreatures.get(i);
+            int x = getIndexX(item1.x());
+            int y = getIndexY(item1.y());
+            fieldArray[x][y] = -1;
+        }
+
     }
 
-    public Point
-
+    public void PrintFieldArray() {
+        for (int i = 0; i < column; i++) {
+            for (int j = 0; j < row; j++) {
+                System.out.print(fieldArray[i][j] + " ");
+            }
+            System.out.println("\n");
+        }
+    }
     public void actionPerformed(ActionEvent e) {
         repaint();
 
@@ -184,16 +266,20 @@ public class Field extends JPanel implements ActionListener {
     }
 
     private void Thing2dStart(Thing2D item, ExecutorService exec) {
-        if (item instanceof Calabash)
-            exec.execute((Calabash) item);
-        else if (item instanceof Grandpa)
-            exec.execute((Grandpa) item);
-        else if (item instanceof Snake)
-            exec.execute((Snake) item);
-        else if (item instanceof Scorpion)
-            exec.execute((Scorpion) item);
-        else if (item instanceof Minion)
-            exec.execute((Minion) item);
+//        if (item instanceof Calabash)
+//            exec.execute((Calabash) item);
+//        else if (item instanceof Grandpa)
+//            exec.execute((Grandpa) item);
+//        else if (item instanceof Snake)
+//            exec.execute((Snake) item);
+//        else if (item instanceof Scorpion)
+//            exec.execute((Scorpion) item);
+//        else if (item instanceof Minion)
+//            exec.execute((Minion) item);
+        if (item instanceof GoodThing2D)
+            exec.execute((GoodThing2D) item);
+        else if (item instanceof BadThing2D)
+            exec.execute((BadThing2D) item);
     }
 
     class TAdapter extends KeyAdapter {
@@ -218,15 +304,17 @@ public class Field extends JPanel implements ActionListener {
             } else if (key == KeyEvent.VK_R) {
                 restartLevel();
             } else if (key == KeyEvent.VK_SPACE) {
+                System.out.println("摁下空格");
                 if(isStart)
                     return;
                 isStart = true;
+                System.out.println("线程开始");
                 exec = Executors.newCachedThreadPool();
                 for (int i = 0; i < badCreatures.size(); i++) {
-                    Thing2dStart((Thing2D) badCreatures.get(i), exec);
+                    Thing2dStart((BadThing2D) badCreatures.get(i), exec);
                 }
                 for (int i = 0; i < goodCreatures.size(); i++) {
-                    Thing2dStart((Thing2D) goodCreatures.get(i), exec);
+                    Thing2dStart((GoodThing2D) goodCreatures.get(i), exec);
                 }
                 //                TimeUnit.SECONDS.sleep(5); // Run for a while...
                 //                exec.shutdownNow(); // Interrupt all tasks
@@ -252,12 +340,13 @@ public class Field extends JPanel implements ActionListener {
                         allStop = false;
                     if (collisionDetection(item1, item2)) {
                         if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
-                            goodCreatures.remove(j);
+                            //goodCreatures.remove(j);
+                            item2.isDied = true;
                         } else if (Math.abs(item1.vx()) == Math.abs(item2.vx())) {
-                            badCreatures.remove(i);
-                            goodCreatures.remove(j);
+                            item1.isDied = true;
+                            item2.isDied = true;
                         } else if (Math.abs(item1.vx()) > Math.abs(item2.vx())) {
-                            badCreatures.remove(i);
+                            item1.isDied = true;
                         }
                     }
                 }
