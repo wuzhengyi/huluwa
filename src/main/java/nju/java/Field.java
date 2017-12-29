@@ -1,5 +1,6 @@
 package nju.java;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.REUtil;
 import creature.*;
 
 import java.awt.*;
@@ -59,22 +60,22 @@ public class Field extends JPanel implements ActionListener {
         return this.h;
     }
 
-    synchronized public void CreatureMove(Thing2D item){
+    synchronized public void CreatureMove(Creature item){
 //        PrintFieldArray();
         if(item.isDied || item.isFighting)
             return;
-        Thing2D target = GetTarget(item);
+        Creature target = getTarget(item);
         if(target == null)
             return;
-        CreatureMoveToTarget(item,target);
-        if(GetDistance(item,target) == SPACE){
+        creatureMoveToTarget(item,target);
+        if(getDistance(item,target) == SPACE){
             item.isFighting = true;
         }
-//        System.out.println(GetDistance(item,target));
+//        System.out.println(getDistance(item,target));
         repaint();
     }
 
-    synchronized private void CreatureMoveToTarget(Thing2D item, Thing2D target){
+    synchronized private void creatureMoveToTarget(Creature item, Creature target){
         int x = getIndexX(item.x());
         int y = getIndexY(item.y());
         int dx = target.x() - item.x();
@@ -101,28 +102,38 @@ public class Field extends JPanel implements ActionListener {
         }
     }
 
-    synchronized private Thing2D GetTarget(Thing2D item){
-        Thing2D target = null;
+    public boolean creatureIsGood(Creature item){
+        int x = getIndexX(item.x());
+        int y = getIndexY(item.y());
+        if(fieldArray[x][y] == 1)
+            return true;
+        return false;
+    }
+
+    synchronized private Creature getTarget(Creature item){
+        Creature target = null;
         int distance = INF;
-        if(item instanceof GoodThing2D){
+        int x = getIndexX(item.x());
+        int y = getIndexY(item.y());
+        if(creatureIsGood(item)){
             for(int i = 0;i<badCreatures.size();i++){
-                BadThing2D temp = (BadThing2D)badCreatures.get(i);
+                Creature temp = (Creature)badCreatures.get(i);
                 if(temp.isFighting || temp.isDied)
                     continue;
-                if(GetDistance(item,temp)<distance){
+                if(getDistance(item,temp)<distance){
                     target = temp;
-                    distance = GetDistance(item,target);
+                    distance = getDistance(item,target);
                 }
             }
         }
-        else if(item instanceof BadThing2D){
+        else if(!creatureIsGood(item)){
             for(int i = 0;i<goodCreatures.size();i++){
-                GoodThing2D temp = (GoodThing2D)goodCreatures.get(i);
+                Creature temp = (Creature)goodCreatures.get(i);
                 if(temp.isFighting || temp.isDied)
                     continue;
-                if(GetDistance(item,temp)<distance){
+                if(getDistance(item,temp)<distance){
                     target = temp;
-                    distance = GetDistance(item,target);
+                    distance = getDistance(item,target);
                 }
             }
         }
@@ -130,7 +141,7 @@ public class Field extends JPanel implements ActionListener {
         return target;
     }
 
-    public int GetDistance(Thing2D item1, Thing2D item2){
+    public int getDistance(Thing2D item1, Thing2D item2){
         return (int)Math.sqrt((item1.x()-item2.x())*(item1.x()-item2.x()) + (item1.y()-item2.y())*(item1.y()-item2.y()));
     }
 
@@ -203,14 +214,14 @@ public class Field extends JPanel implements ActionListener {
                 fieldArray[i][j]=0;
 
         for (int j = 0; j < goodCreatures.size(); j++) {
-            GoodThing2D item2 = (GoodThing2D) goodCreatures.get(j);
+            Creature item2 = (Creature) goodCreatures.get(j);
             int x = getIndexX(item2.x());
             int y = getIndexY(item2.y());
             fieldArray[x][y] = 1;
         }
 
         for (int i = 0; i < badCreatures.size(); i++) {
-            BadThing2D item1 = (BadThing2D) badCreatures.get(i);
+            Creature item1 = (Creature) badCreatures.get(i);
             int x = getIndexX(item1.x());
             int y = getIndexY(item1.y());
             fieldArray[x][y] = -1;
@@ -218,14 +229,6 @@ public class Field extends JPanel implements ActionListener {
 
     }
 
-    public void PrintFieldArray() {
-        for (int i = 0; i < column; i++) {
-            for (int j = 0; j < row; j++) {
-                System.out.print(fieldArray[i][j] + " ");
-            }
-            System.out.println("\n");
-        }
-    }
     public void actionPerformed(ActionEvent e) {
         repaint();
 
@@ -265,23 +268,6 @@ public class Field extends JPanel implements ActionListener {
         buildWorld(g);
     }
 
-    private void Thing2dStart(Thing2D item, ExecutorService exec) {
-//        if (item instanceof Calabash)
-//            exec.execute((Calabash) item);
-//        else if (item instanceof Grandpa)
-//            exec.execute((Grandpa) item);
-//        else if (item instanceof Snake)
-//            exec.execute((Snake) item);
-//        else if (item instanceof Scorpion)
-//            exec.execute((Scorpion) item);
-//        else if (item instanceof Minion)
-//            exec.execute((Minion) item);
-        if (item instanceof GoodThing2D)
-            exec.execute((GoodThing2D) item);
-        else if (item instanceof BadThing2D)
-            exec.execute((BadThing2D) item);
-    }
-
     class TAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
@@ -311,10 +297,12 @@ public class Field extends JPanel implements ActionListener {
                 System.out.println("线程开始");
                 exec = Executors.newCachedThreadPool();
                 for (int i = 0; i < badCreatures.size(); i++) {
-                    Thing2dStart((BadThing2D) badCreatures.get(i), exec);
+                    exec.execute((Creature) badCreatures.get(i));
+//                    Thing2dStart((BadThing2D) badCreatures.get(i), exec);
                 }
                 for (int i = 0; i < goodCreatures.size(); i++) {
-                    Thing2dStart((GoodThing2D) goodCreatures.get(i), exec);
+//                    Thing2dStart((GoodThing2D) goodCreatures.get(i), exec);
+                    exec.execute((Creature)goodCreatures.get(i));
                 }
                 //                TimeUnit.SECONDS.sleep(5); // Run for a while...
                 //                exec.shutdownNow(); // Interrupt all tasks
@@ -334,18 +322,18 @@ public class Field extends JPanel implements ActionListener {
             for (int i = 0; i < badCreatures.size(); i++) {
                 for (int j = 0; j < goodCreatures.size(); j++) {
 
-                    Thing2D item2 = (Thing2D) goodCreatures.get(j);
-                    Thing2D item1 = (Thing2D) badCreatures.get(i);
+                    Creature item2 = (Creature) goodCreatures.get(j);
+                    Creature item1 = (Creature) badCreatures.get(i);
                     if ((item1.x() != getPointX(0) && item1.x() != getPointX(column)) || (item2.x() != getPointX(0) && item2.x() != getPointX(column)))
                         allStop = false;
                     if (collisionDetection(item1, item2)) {
-                        if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
+                        if (Math.abs(item1.getDelay()) < Math.abs(item2.getDelay())) {
                             //goodCreatures.remove(j);
                             item2.isDied = true;
-                        } else if (Math.abs(item1.vx()) == Math.abs(item2.vx())) {
+                        } else if (Math.abs(item1.getDelay()) == Math.abs(item2.getDelay())) {
                             item1.isDied = true;
                             item2.isDied = true;
-                        } else if (Math.abs(item1.vx()) > Math.abs(item2.vx())) {
+                        } else if (Math.abs(item1.getDelay()) > Math.abs(item2.getDelay())) {
                             item1.isDied = true;
                         }
                     }

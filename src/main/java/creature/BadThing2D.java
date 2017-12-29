@@ -3,7 +3,7 @@ package creature;
 import nju.java.Field;
 import nju.java.Thing2D;
 
-public class BadThing2D extends Thing2D implements Runnable {
+public class BadThing2D extends Thing2D{
 //    private final int w = 11 * 50;
     private final int OFFSET = 30;
     private final int SPSACE = 50;
@@ -25,24 +25,6 @@ public class BadThing2D extends Thing2D implements Runnable {
         this.setY(ny);
     }
 
-    @Override
-    public int CanMove(){
-        return -super.CanMove();
-    }
 
-    public void run() {
-        while (!Thread.interrupted()) {
-            try {
-                if(CanMove()!=0){
-//                    System.out.println("BadThing2D move");
-                    this.field.CreatureMove(this);
-                }
-                Thread.sleep(1000);
-                notify();
-//                this.field.repaint();
-            } catch (Exception e) {
-            }
 
-        }
-    }
 }

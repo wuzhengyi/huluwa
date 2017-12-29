@@ -3,6 +3,8 @@ package creature;
 import nju.java.Field;
 import nju.java.Thing2D;
 
+import java.util.Random;
+
 
 public class Creature extends Thing2D implements Runnable{
     public final int OFFSET = 30;
@@ -16,6 +18,8 @@ public class Creature extends Thing2D implements Runnable{
         super(x,y);
         this.field = field;
         isDied = false;
+        Random rand = new Random();
+        setDelay(rand.nextInt(4 ) + 1);
     }
 
     public boolean CanMove(){
@@ -27,11 +31,15 @@ public class Creature extends Thing2D implements Runnable{
             return false;
     }
 
+    public void setDelay(int delay) {this.delay = delay; indexDelay = 0;}
+
+    public int getDelay() {return this.delay;}
+
     public void run() {
         while (!Thread.interrupted()) {
             try {
                 if(this.CanMove()){
-//                    System.out.println("BadThing2D move");
+//                    System.out.println("Creature move");
                     this.field.CreatureMove(this);
                 }
                 Thread.sleep(1000);

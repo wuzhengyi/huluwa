@@ -1,8 +1,5 @@
 package nju.java;
 
-import creature.BadThing2D;
-import creature.GoodThing2D;
-
 import java.awt.Image;
 import java.util.Random;
 
@@ -24,8 +21,6 @@ public class Thing2D {
 //        this.y = y;
         this.x = Field.getPointX(x);
         this.y = Field.getPointY(y);
-        Random rand = new Random();
-        setV(rand.nextInt(4 ) + 1);
         reverse = false;
         isDied = true;
         isFighting = false;
@@ -54,10 +49,6 @@ public class Thing2D {
     public void setY(int y) {
         this.y = y;
     }
-
-    public void setV(int v) {this.v = v; indexV = 0;}
-
-    public int vx() {return this.v;}
 
     public void setReverse(){reverse = !reverse;}
 } 
