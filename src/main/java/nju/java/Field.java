@@ -171,6 +171,8 @@ public class Field extends JPanel implements ActionListener {
     class TAdapter extends KeyAdapter {
         @Override
         public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_R) {
+                restartLevel();}
             if (completed) {
                 return;
             }
@@ -208,26 +210,28 @@ public class Field extends JPanel implements ActionListener {
         return false;
     }
 
-    private boolean collisionAllDetection(){
+    synchronized private boolean collisionAllDetection(){
         boolean allStop = true;
-        for (int i = 0; i < badCreatures.size(); i++) {
-            for (int j = 0; j < goodCreatures.size(); j++) {
-                Thing2D item2 = (Thing2D) goodCreatures.get(j);
-                Thing2D item1 = (Thing2D) badCreatures.get(i);
-                if ((item1.x() != getPointX(0) && item1.x() != getPointX(10)) || (item2.x() != getPointX(0) && item2.x() != getPointX(10)))
-                    allStop = false;
-                if (collisionDetection(item1, item2)) {
-                    if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
-                        goodCreatures.remove(j);
-                    } else if (Math.abs(item1.vx()) == Math.abs(item2.vx())) {
-                        badCreatures.remove(i);
-                        goodCreatures.remove(j);
-                    } else if (Math.abs(item1.vx()) > Math.abs(item2.vx())) {
-                        badCreatures.remove(i);
+            for (int i = 0; i < badCreatures.size(); i++) {
+                for (int j = 0; j < goodCreatures.size(); j++) {
+
+                    Thing2D item2 = (Thing2D) goodCreatures.get(j);
+                    Thing2D item1 = (Thing2D) badCreatures.get(i);
+                    if ((item1.x() != getPointX(0) && item1.x() != getPointX(10)) || (item2.x() != getPointX(0) && item2.x() != getPointX(10)))
+                        allStop = false;
+                    if (collisionDetection(item1, item2)) {
+                        if (Math.abs(item1.vx()) < Math.abs(item2.vx())) {
+                            goodCreatures.remove(j);
+                        } else if (Math.abs(item1.vx()) == Math.abs(item2.vx())) {
+                            badCreatures.remove(i);
+                            goodCreatures.remove(j);
+                        } else if (Math.abs(item1.vx()) > Math.abs(item2.vx())) {
+                            badCreatures.remove(i);
+                        }
                     }
                 }
             }
-        }
+
         return allStop;
     }
 
@@ -250,6 +254,7 @@ public class Field extends JPanel implements ActionListener {
             if (allStop) {
                 if(goodCreatures.size()==0 || badCreatures.size()==0){
                     completed = true;
+                    timer.stop();
                     repaint();
                     locked = false;
                     return;
@@ -268,7 +273,6 @@ public class Field extends JPanel implements ActionListener {
     public void restartLevel() {
         tiles.clear();
         initWorld();
-        timer.stop();
         if (completed) {
             completed = false;
         }
