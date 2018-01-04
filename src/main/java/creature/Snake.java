@@ -12,7 +12,7 @@ public class Snake extends Creature {
 
     public Snake(int x, int y, Field field) {
         super(x, y, field);
-
+        this.camp = Camp.Bad;
         this.field = field;
 
         URL loc = this.getClass().getClassLoader().getResource("snake.png");

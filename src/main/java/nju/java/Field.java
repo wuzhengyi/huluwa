@@ -21,9 +21,10 @@ public class Field extends JPanel implements ActionListener {
     private ExecutorService exec;
     private int fieldArray[][];
 
-    private ArrayList tiles = new ArrayList();
-    private ArrayList badCreatures = new ArrayList();
-    private ArrayList goodCreatures = new ArrayList();
+    private ArrayList<Tile> tiles = new ArrayList<Tile>();
+    private ArrayList<Fight> fight = new ArrayList<Fight>();
+    private ArrayList<Creature> badCreatures = new ArrayList<Creature>();
+    private ArrayList<Creature> goodCreatures = new ArrayList<Creature>();
     private Timer timer = new Timer(100, new TimerListener());
 
     //    private Player player;
@@ -69,7 +70,9 @@ public class Field extends JPanel implements ActionListener {
             return;
         creatureMoveToTarget(item,target);
         if(getDistance(item,target) == SPACE){
-            item.isFighting = true;
+//            item.isFighting = true;
+
+            item.fightTheEnemy(target);
         }
 //        System.out.println(getDistance(item,target));
         repaint();
@@ -155,9 +158,10 @@ public class Field extends JPanel implements ActionListener {
 
     public final void initWorld() {
 
-        timer.start();
+
         goodCreatures.clear();
         badCreatures.clear();
+        fight.clear();
         isStart = false;
         completed = false;
 
@@ -202,6 +206,7 @@ public class Field extends JPanel implements ActionListener {
             h = getPointY(y);
         }
         row = y;
+        timer.start();
         initFieldArray();
     }
 
@@ -215,6 +220,8 @@ public class Field extends JPanel implements ActionListener {
 
         for (int j = 0; j < goodCreatures.size(); j++) {
             Creature item2 = (Creature) goodCreatures.get(j);
+            if(item2.isDied)
+                continue;
             int x = getIndexX(item2.x());
             int y = getIndexY(item2.y());
             fieldArray[x][y] = 1;
@@ -222,6 +229,8 @@ public class Field extends JPanel implements ActionListener {
 
         for (int i = 0; i < badCreatures.size(); i++) {
             Creature item1 = (Creature) badCreatures.get(i);
+            if(item1.isDied)
+                continue;
             int x = getIndexX(item1.x());
             int y = getIndexY(item1.y());
             fieldArray[x][y] = -1;
@@ -234,23 +243,35 @@ public class Field extends JPanel implements ActionListener {
 
     }
 
+    public void addFight(Creature item1, Creature item2){
+        fight.add(new Fight(item1, item2));
+//        System.out.println("fight at " + getIndexX(x) + "," + getIndexY(y));
+    }
+
     public void buildWorld(Graphics g) {
 
         g.setColor(new Color(250, 240, 170));
         g.fillRect(0, 0, this.getWidth() + OFFSET, this.getHeight() + OFFSET);
 
         ArrayList world = new ArrayList();
+
         world.addAll(tiles);
         world.addAll(badCreatures);
         world.addAll(goodCreatures);
+        world.addAll(fight);
 
         for (int i = 0; i < world.size(); i++) {
 
             Thing2D item = (Thing2D) world.get(i);
 
-            if (item instanceof GoodThing2D || item instanceof BadThing2D) {
-                g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
-            } else {
+            if (item instanceof Creature) {
+                if(!item.isDied)
+                    g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
+            } else if(item instanceof Fight){
+                if(!((Fight) item).fightIsEnd())
+                    g.drawImage(item.getImage(), item.x(), item.y(), this);
+            }else
+            {
                 g.drawImage(item.getImage(), item.x(), item.y(), this);
             }
 
@@ -317,7 +338,7 @@ public class Field extends JPanel implements ActionListener {
         return false;
     }
 
-    synchronized private boolean collisionAllDetection(){
+   /* synchronized private boolean collisionAllDetection(){
         boolean allStop = true;
             for (int i = 0; i < badCreatures.size(); i++) {
                 for (int j = 0; j < goodCreatures.size(); j++) {
@@ -341,33 +362,55 @@ public class Field extends JPanel implements ActionListener {
             }
 
         return allStop;
-    }
+    }*/
 
-    private void sortCreatures(ArrayList Creatures){
+    /*private void sortCreatures(ArrayList Creatures){
         for (int i = 0; i < Creatures.size(); i++) {
             ((Thing2D) Creatures.get(i)).setY(getPointY(i));
             ((Thing2D) Creatures.get(i)).setReverse();
         }
+    }*/
+
+    boolean isCompleted(){
+        boolean goodAllDied = true;
+        for(Creature c:goodCreatures){
+            if(!c.isDied)
+                goodAllDied = false;
+        }
+        boolean badAllDied = true;
+        for(Creature c:badCreatures){
+            if(!c.isDied)
+                badAllDied = false;
+        }
+        return goodAllDied || badAllDied;
     }
 
     class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            /*碰撞检测*/
-            boolean allStop = collisionAllDetection();
-
-            //反复进攻
-            if (allStop) {
-                if(goodCreatures.size()==0 || badCreatures.size()==0){
-                    completed = true;
-                    timer.stop();
-                    repaint();
-                    return;
-                }
-
-                sortCreatures(goodCreatures);
-                sortCreatures(badCreatures);
-
+            for(Fight f:fight){
+                f.fightIsEnd();
             }
+            initFieldArray();
+            repaint();
+            if(isCompleted())
+                completed = true;
+
+//            /*碰撞检测*/
+//            boolean allStop = collisionAllDetection();
+//
+//            //反复进攻
+//            if (allStop) {
+//                if(goodCreatures.size()==0 || badCreatures.size()==0){
+//                    completed = true;
+//                    timer.stop();
+//                    repaint();
+//                    return;
+//                }
+//
+//                sortCreatures(goodCreatures);
+//                sortCreatures(badCreatures);
+//
+//            }
         }
     }
 

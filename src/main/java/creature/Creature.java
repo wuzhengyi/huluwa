@@ -5,14 +5,13 @@ import nju.java.Thing2D;
 
 import java.util.Random;
 
+enum Camp{Good, Bad, Neutrality}
 
 public class Creature extends Thing2D implements Runnable{
-    public final int OFFSET = 30;
-    public final int SPSACE = 50;
     private int delay;
     private int indexDelay;
     protected Field field;
-    private final int w = 10 * SPACE + OFFSET;
+    protected Camp camp = Camp.Neutrality;
 
     public Creature(int x, int y, Field field) {
         super(x,y);
@@ -20,6 +19,7 @@ public class Creature extends Thing2D implements Runnable{
         isDied = false;
         Random rand = new Random();
         setDelay(rand.nextInt(4 ) + 1);
+        camp = Camp.Neutrality;
     }
 
     public boolean CanMove(){
@@ -32,6 +32,15 @@ public class Creature extends Thing2D implements Runnable{
     }
 
     public void setDelay(int delay) {this.delay = delay; indexDelay = 0;}
+
+    public boolean fightTheEnemy(Creature enemy){
+        if(this.camp == enemy.camp || this.camp == Camp.Neutrality || enemy.camp == Camp.Neutrality || this.isDied || enemy.isDied || this.isFighting || enemy.isFighting)
+            return false;
+        this.isFighting = true;
+        enemy.isFighting = true;
+        field.addFight(this, enemy);
+        return true;
+    }
 
     public int getDelay() {return this.delay;}
 

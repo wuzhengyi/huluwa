@@ -13,6 +13,7 @@ public class Calabash extends Creature {
 
     public Calabash(int x, int y, Field field) {
         super(x, y,field);
+        this.camp = Camp.Good;
         URL loc = this.getClass().getClassLoader().getResource((index++) + ".png");
         if (index > 7)
             index = 1;

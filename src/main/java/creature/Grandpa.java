@@ -11,6 +11,7 @@ public class Grandpa extends Creature{
 
     public Grandpa(int x, int y, Field field) {
         super(x, y, field);
+        this.camp = Camp.Good;
         setDelay(1);
         this.field = field;
 
