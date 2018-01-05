@@ -4,6 +4,7 @@ import java.net.URL;
 import javax.swing.*;
 import net.miginfocom.swing.*;
 import nju.java.field.Ground;
+import nju.java.record.MyDialog;
 import nju.java.record.WnetWScreenRecordPlayer;
 /*
  * Created by JFormDesigner on Fri Jan 05 13:38:16 CST 2018
@@ -21,8 +22,8 @@ public class login extends JFrame {
 
     private void startGameMouseClicked(MouseEvent e) {
         // TODO add your code here
-        Ground ground = new Ground();
-        ground.setVisible(true);
+        MyDialog myDialog = new MyDialog(new Frame());
+        myDialog.show();
         this.hide();
     }
 
@@ -118,6 +119,7 @@ public class login extends JFrame {
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
         initBackground();
+        setLocationRelativeTo(null);
     }
 
     public void initBackground(){

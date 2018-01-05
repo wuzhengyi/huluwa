@@ -4,6 +4,7 @@ import nju.java.attribute.Direction;
 import nju.java.attribute.Fighters;
 import nju.java.attribute.ObserveField;
 import nju.java.creature.*;
+import nju.java.formation.*;
 import nju.java.record.WnetWScreenRecorder;
 
 import java.awt.*;
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.*;
 
-public class Field extends JPanel implements ActionListener, ObserveField , Fighters{
+public class Field extends JPanel implements ActionListener, ObserveField, Fighters, BluntYokeVSCraneWing {
     public static final int INF = 1000000;
     private static int OFFSET = 30;
     private static int SPACE = 50;
@@ -31,17 +32,6 @@ public class Field extends JPanel implements ActionListener, ObserveField , Figh
     private int h = 0;
     private boolean isStart = false;
     private boolean completed = false;
-
-    private String level =
-            ".........\n" +
-            "*......m.\n" +
-            "*.....m..\n" +
-            "*....s...\n" +
-            "*....n...\n" +
-            "*.....m..\n" +
-            "*......m.\n" +
-            "*.......m\n" +
-            "g........\n";
 
     public Field() {
         addKeyListener(new TAdapter());
@@ -149,11 +139,11 @@ public class Field extends JPanel implements ActionListener, ObserveField , Figh
         int x = 0;
         int y = 0;
 
-        for (int i = 0; i < level.length(); i++) {
+        for (int i = 0; i < formation.length(); i++) {
             //铺上草地
 
 
-            char item = level.charAt(i);
+            char item = formation.charAt(i);
             if (item != '\n')
                 tiles.add(new Tile(x, y));
             if (item == '\n') {
@@ -260,7 +250,8 @@ public class Field extends JPanel implements ActionListener, ObserveField , Figh
             if (completed) {
                 g.setColor(new Color(0, 0, 0));
                 g.drawString("Completed", 25, 20);
-                screenRecorder.stop();
+                if(screenRecorder!=null)
+                    screenRecorder.stop();
             }
 
         }
