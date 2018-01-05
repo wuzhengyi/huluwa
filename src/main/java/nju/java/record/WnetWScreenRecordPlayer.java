@@ -1,8 +1,7 @@
-package record;
+package nju.java.record;
 
 import java.awt.*;
 import javax.swing.*;
-import java.io.*;
 
 public class WnetWScreenRecordPlayer extends JFrame{
     BorderLayout borderLayout1 = new BorderLayout();

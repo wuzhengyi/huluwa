@@ -1,4 +1,4 @@
-package attribute;
+package nju.java.attribute;
 
 public interface Action {
     int delay = 0;

@@ -1,6 +1,6 @@
-package nju.java;
+package nju.java.field;
 
-import creature.Creature;
+import nju.java.creature.Creature;
 
 import java.awt.Image;
 import java.net.URL;

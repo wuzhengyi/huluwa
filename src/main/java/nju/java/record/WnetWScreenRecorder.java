@@ -1,11 +1,10 @@
-package record;
+package nju.java.record;
 
 import java.awt.*;
 import java.awt.image.*;
 //import com.sun.image.codec.jpeg.*;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.io.*;
 
 

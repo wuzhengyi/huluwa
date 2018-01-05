@@ -1,15 +1,15 @@
-package creature;
+package nju.java.creature;
 
-import attribute.Action;
-import attribute.Camp;
-import attribute.Direction;
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.FieldAccessor_Double;
-import nju.java.Field;
-import nju.java.Thing2D;
+import nju.java.attribute.Action;
+import nju.java.attribute.Attack;
+import nju.java.attribute.Camp;
+import nju.java.attribute.Direction;
+import nju.java.field.Field;
+import nju.java.field.Thing2D;
 
 import java.util.Random;
 
-public class Creature extends Thing2D implements Runnable, Action {
+public class Creature extends Thing2D implements Runnable, Action, Attack {
     private int delay;
     private int indexDelay;
     protected Field field;
@@ -50,6 +50,8 @@ public class Creature extends Thing2D implements Runnable, Action {
 
     public void setDelay(int delay) {this.delay = delay; indexDelay = 0;}
 
+    public int getDelay() {return this.delay;}
+
     public boolean fightTheEnemy(Creature enemy){
         if(this.camp == enemy.camp || this.camp == Camp.Neutrality || enemy.camp == Camp.Neutrality || this.isDied() || enemy.isDied() || this.isFighting || enemy.isFighting)
             return false;
@@ -58,8 +60,6 @@ public class Creature extends Thing2D implements Runnable, Action {
         field.addFight(this, enemy);
         return true;
     }
-
-    public int getDelay() {return this.delay;}
 
     public void moveToDirection(Direction direction) {
         switch (direction){
@@ -72,7 +72,7 @@ public class Creature extends Thing2D implements Runnable, Action {
         }
     }
 
-    private void moveToTarget(Creature item, Creature target){
+    public void moveToTarget(Creature item, Creature target){
         Direction direction = field.lookAround(item,target);
         moveToDirection(direction);
     }

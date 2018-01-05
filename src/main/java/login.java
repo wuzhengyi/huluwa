@@ -3,8 +3,8 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
 import net.miginfocom.swing.*;
-import nju.java.Ground;
-import record.WnetWScreenRecordPlayer;
+import nju.java.field.Ground;
+import nju.java.record.WnetWScreenRecordPlayer;
 /*
  * Created by JFormDesigner on Fri Jan 05 13:38:16 CST 2018
  */
