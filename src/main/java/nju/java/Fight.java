@@ -29,8 +29,8 @@ public class Fight extends Thing2D {
         if(delay == 0){
             item1.isFighting = false;
             item2.isFighting = false;
-            item1.isDied = true;
-            item2.isDied = false;
+            item1.setDied();
+            item2.setNotDied();
         }
         return (delay--)<0;
     }

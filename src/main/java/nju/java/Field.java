@@ -1,8 +1,7 @@
 package nju.java;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.REUtil;
+import attribute.Direction;
 import creature.*;
-import record.WnetWScreenRecordPlayer;
 import record.WnetWScreenRecorder;
 
 import java.awt.*;
@@ -67,48 +66,29 @@ public class Field extends JPanel implements ActionListener {
         this.screenRecorder = recorder;
     }
 
-    synchronized public void CreatureMove(Creature item){
-//        PrintFieldArray();
-        if(item.isDied || item.isFighting)
-            return;
-        Creature target = getTarget(item);
-        if(target == null)
-            return;
-        creatureMoveToTarget(item,target);
-        if(getDistance(item,target) == SPACE){
-//            item.isFighting = true;
-
-            item.fightTheEnemy(target);
-        }
-//        System.out.println(getDistance(item,target));
-        repaint();
+    public boolean EnemyInRange(Creature item, Creature target){
+        return getDistance(item,target) == SPACE;
     }
 
-    synchronized private void creatureMoveToTarget(Creature item, Creature target){
+    synchronized public Direction lookAround(Creature item, Creature target){
         int x = getIndexX(item.x());
         int y = getIndexY(item.y());
         int dx = target.x() - item.x();
         int dy = target.y() - item.y();
         if(dx < 0 && x > 0 && fieldArray[x - 1][y] == 0){
-            fieldArray[x-1][y] = fieldArray[x][y];
-            fieldArray[x][y] = 0;
-            item.setX(getPointX(x-1));
+            return Direction.West;
         }
         else if(dx > 0 && x < column - 1 && fieldArray[x + 1][y] == 0){
-            fieldArray[x+1][y] = fieldArray[x][y];
-            fieldArray[x][y] = 0;
-            item.setX(getPointX(x+1));
+            return Direction.East;
         }
         else if(dy < 0 && y > 0 && fieldArray[x][y - 1] == 0){
-            fieldArray[x][y-1] = fieldArray[x][y];
-            fieldArray[x][y] = 0;
-            item.setY(getPointY(y-1));
+            return Direction.North;
         }
         else if(dy > 0 && x < row - 1 && fieldArray[x][y + 1] == 0){
-            fieldArray[x][y+1] = fieldArray[x][y];
-            fieldArray[x][y] = 0;
-            item.setY(getPointY(y+1));
+            return Direction.South;
         }
+        else
+            return Direction.NoAction;
     }
 
     public boolean creatureIsGood(Creature item){
@@ -119,7 +99,7 @@ public class Field extends JPanel implements ActionListener {
         return false;
     }
 
-    synchronized private Creature getTarget(Creature item){
+    synchronized public Creature observeFieldAndGetTarget(Creature item){
         Creature target = null;
         int distance = INF;
         int x = getIndexX(item.x());
@@ -127,7 +107,7 @@ public class Field extends JPanel implements ActionListener {
         if(creatureIsGood(item)){
             for(int i = 0;i<badCreatures.size();i++){
                 Creature temp = (Creature)badCreatures.get(i);
-                if(temp.isFighting || temp.isDied)
+                if(temp.isFighting || temp.isDied())
                     continue;
                 if(getDistance(item,temp)<distance){
                     target = temp;
@@ -138,7 +118,7 @@ public class Field extends JPanel implements ActionListener {
         else if(!creatureIsGood(item)){
             for(int i = 0;i<goodCreatures.size();i++){
                 Creature temp = (Creature)goodCreatures.get(i);
-                if(temp.isFighting || temp.isDied)
+                if(temp.isFighting || temp.isDied())
                     continue;
                 if(getDistance(item,temp)<distance){
                     target = temp;
@@ -217,7 +197,7 @@ public class Field extends JPanel implements ActionListener {
 
     }
 
-    private void initFieldArray(){
+    public synchronized void initFieldArray(){
 
         fieldArray = new int[column][row];
 
@@ -227,7 +207,7 @@ public class Field extends JPanel implements ActionListener {
 
         for (int j = 0; j < goodCreatures.size(); j++) {
             Creature item2 = (Creature) goodCreatures.get(j);
-            if(item2.isDied)
+            if(item2.isDied())
                 continue;
             int x = getIndexX(item2.x());
             int y = getIndexY(item2.y());
@@ -236,7 +216,7 @@ public class Field extends JPanel implements ActionListener {
 
         for (int i = 0; i < badCreatures.size(); i++) {
             Creature item1 = (Creature) badCreatures.get(i);
-            if(item1.isDied)
+            if(item1.isDied())
                 continue;
             int x = getIndexX(item1.x());
             int y = getIndexY(item1.y());
@@ -272,7 +252,7 @@ public class Field extends JPanel implements ActionListener {
             Thing2D item = (Thing2D) world.get(i);
 
             if (item instanceof Creature) {
-                if(!item.isDied)
+//                if(!item.isDied())
                     g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
             } else if(item instanceof Fight){
                 if(!((Fight) item).fightIsEnd())
@@ -340,48 +320,15 @@ public class Field extends JPanel implements ActionListener {
         return false;
     }
 
-   /* synchronized private boolean collisionAllDetection(){
-        boolean allStop = true;
-            for (int i = 0; i < badCreatures.size(); i++) {
-                for (int j = 0; j < goodCreatures.size(); j++) {
-
-                    Creature item2 = (Creature) goodCreatures.get(j);
-                    Creature item1 = (Creature) badCreatures.get(i);
-                    if ((item1.x() != getPointX(0) && item1.x() != getPointX(column)) || (item2.x() != getPointX(0) && item2.x() != getPointX(column)))
-                        allStop = false;
-                    if (collisionDetection(item1, item2)) {
-                        if (Math.abs(item1.getDelay()) < Math.abs(item2.getDelay())) {
-                            //goodCreatures.remove(j);
-                            item2.isDied = true;
-                        } else if (Math.abs(item1.getDelay()) == Math.abs(item2.getDelay())) {
-                            item1.isDied = true;
-                            item2.isDied = true;
-                        } else if (Math.abs(item1.getDelay()) > Math.abs(item2.getDelay())) {
-                            item1.isDied = true;
-                        }
-                    }
-                }
-            }
-
-        return allStop;
-    }*/
-
-    /*private void sortCreatures(ArrayList Creatures){
-        for (int i = 0; i < Creatures.size(); i++) {
-            ((Thing2D) Creatures.get(i)).setY(getPointY(i));
-            ((Thing2D) Creatures.get(i)).setReverse();
-        }
-    }*/
-
     boolean isCompleted(){
         boolean goodAllDied = true;
         for(Creature c:goodCreatures){
-            if(!c.isDied)
+            if(!c.isDied())
                 goodAllDied = false;
         }
         boolean badAllDied = true;
         for(Creature c:badCreatures){
-            if(!c.isDied)
+            if(!c.isDied())
                 badAllDied = false;
         }
         return goodAllDied || badAllDied;
@@ -389,9 +336,12 @@ public class Field extends JPanel implements ActionListener {
 
     class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            for(Fight f:fight){
-                f.fightIsEnd();
+            synchronized (fight){
+                for(int i=0;i<fight.size();i++){
+                    fight.get(i).fightIsEnd();
+                }
             }
+
             initFieldArray();
             repaint();
             if(isCompleted())
