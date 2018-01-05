@@ -304,7 +304,7 @@ public class Field extends JPanel implements ActionListener {
                 restartLevel();}
             else if (e.getKeyCode() == KeyEvent.VK_L) {
                 System.out.println("play record.");
-                new WnetWScreenRecordPlayer();
+
             }
             if (completed) {
                 return;

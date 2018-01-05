@@ -1,11 +1,12 @@
 package nju.java;
 
+import org.junit.Test;
+
 import java.awt.Image;
 import java.net.URL;
 import javax.swing.ImageIcon;
 
 public class Tile extends Thing2D {
-
     public Tile(int x, int y) {
         super(x, y);
 

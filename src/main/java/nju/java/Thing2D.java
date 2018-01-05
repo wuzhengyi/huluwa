@@ -1,5 +1,7 @@
 package nju.java;
 
+import org.junit.Test;
+
 import java.awt.Image;
 import java.util.Random;
 
@@ -25,7 +27,6 @@ public class Thing2D {
         isDied = true;
         isFighting = false;
     }
-
     public Image getImage() {
         return this.image;
     }
@@ -51,4 +52,4 @@ public class Thing2D {
     }
 
     public void setReverse(){reverse = !reverse;}
-} 
+}
