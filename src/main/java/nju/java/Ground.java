@@ -1,13 +1,15 @@
 package nju.java;
 
 
+import record.WnetWScreenRecorder;
+
 import javax.swing.JFrame;
 
 
 public final class Ground extends JFrame {
 
     private final int OFFSET = 30;
-
+    private WnetWScreenRecorder screenRecorder;
 
     public Ground() {
         InitUI();
@@ -21,6 +23,10 @@ public final class Ground extends JFrame {
         setSize(field.getBoardWidth() + 2 * OFFSET,
                 field.getBoardHeight() + 2 * OFFSET);
         setLocationRelativeTo(null);
+        System.out.println(this.getX());
         setTitle("Ground");
+        screenRecorder = new WnetWScreenRecorder(this.getBounds());
+        field.setScreenRecorder(screenRecorder);
+        screenRecorder.start();
     }
 }

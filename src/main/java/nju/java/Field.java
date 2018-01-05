@@ -2,6 +2,8 @@ package nju.java;
 
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.REUtil;
 import creature.*;
+import record.WnetWScreenRecordPlayer;
+import record.WnetWScreenRecorder;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +22,7 @@ public class Field extends JPanel implements ActionListener {
     private int row, column = 0;
     private ExecutorService exec;
     private int fieldArray[][];
+    private WnetWScreenRecorder screenRecorder;
 
     private ArrayList<Tile> tiles = new ArrayList<Tile>();
     private ArrayList<Fight> fight = new ArrayList<Fight>();
@@ -47,7 +50,6 @@ public class Field extends JPanel implements ActionListener {
             "g........\n";
 
     public Field() {
-
         addKeyListener(new TAdapter());
         setFocusable(true);
         initWorld();
@@ -59,6 +61,10 @@ public class Field extends JPanel implements ActionListener {
 
     public int getBoardHeight() {
         return this.h;
+    }
+
+    public void setScreenRecorder(WnetWScreenRecorder recorder){
+        this.screenRecorder = recorder;
     }
 
     synchronized public void CreatureMove(Creature item){
@@ -208,6 +214,7 @@ public class Field extends JPanel implements ActionListener {
         row = y;
         timer.start();
         initFieldArray();
+
     }
 
     private void initFieldArray(){
@@ -278,6 +285,7 @@ public class Field extends JPanel implements ActionListener {
             if (completed) {
                 g.setColor(new Color(0, 0, 0));
                 g.drawString("Completed", 25, 20);
+                screenRecorder.stop();
             }
 
         }
@@ -294,21 +302,15 @@ public class Field extends JPanel implements ActionListener {
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_R) {
                 restartLevel();}
+            else if (e.getKeyCode() == KeyEvent.VK_L) {
+                System.out.println("play record.");
+                new WnetWScreenRecordPlayer();
+            }
             if (completed) {
                 return;
             }
             int key = e.getKeyCode();
-            if (key == KeyEvent.VK_LEFT) {
-                //                player.move(-SPACE, 0);
-            } else if (key == KeyEvent.VK_RIGHT) {
-                //                player.move(SPACE, 0);
-            } else if (key == KeyEvent.VK_UP) {
-                //                player.move(0, -SPACE);
-            } else if (key == KeyEvent.VK_DOWN) {
-                //                player.move(0, SPACE);
-            } else if (key == KeyEvent.VK_S) {
-                //                new Thread(player).start();
-            } else if (key == KeyEvent.VK_R) {
+            if (key == KeyEvent.VK_R) {
                 restartLevel();
             } else if (key == KeyEvent.VK_SPACE) {
                 System.out.println("摁下空格");
