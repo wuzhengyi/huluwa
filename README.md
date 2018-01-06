@@ -15,99 +15,83 @@
 
 ## 二、类的关系
 
+![CodeStruction](http://img.blog.csdn.net/20180106193107616?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvanVzdGljZTA=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
 
-
-## 三、类详解
+## 三、代码详解
 
 ### Main
 
-其中执行了老师所规定的操作
+程序的主类
 
-### Position
+### attribute
 
-| Define                                                | Information                                        |
-| ----------------------------------------------------- | -------------------------------------------------- |
-| int N                                                 | 定义了二维空间的大小                               |
-| Creature Point[N][N]                                  | 定义了一个二维的Creature类                         |
-| void SetN()                                           | 更改二维数组宽度和高度                             |
-| void InitPoint()                                      | 用N初始化二维数组Creature                          |
-| void Echo()                                           | 打印当前阵型                                       |
-| boolean AddCreature(int x, int y, Creature Creature)  | 再[x][y]处添加一个creature,如果已有生物则返回false |
-| boolean SnakeArray(int x, int y, Queue creatures)     | 以[x][y]为头将Queue中creatures布长蛇阵             |
-| boolean CraneWingArray(int x, int y, Queue creatures) | 以[x][y]为头将Queue中creatures布鹤翼阵             |
-| boolean BluntYokeArray(int x, int y, Queue creatures) | 以[x][y]为头将Queue中creatures布冲轭阵             |
+| Class name   | Class information                                                       |
+| ------------ | ----------------------------------------------------------------------- |
+| Action       | 定义了Creature可以执行动作的接口,包含是否可以行动与向某个方向前进       |
+| Attack       | 定义了Creature可以的进攻行为，包含攻击敌人与向敌人移动                  |
+| Camp         | 定义了一个阵营的枚举变量，包含正方，反方与中立                          |
+| Direction    | 定义了前进方向的枚举变量，包含东南西北中                                |
+| Fighters     | 定义了Field的战斗者们的接口，包含判断阵营，添加战斗者与战斗结束等方法   |
+| ObserveField | 定义了Field的战斗者们观察战场接口，包含寻找地方势力与观察四周生物等方法 |
 
 ### Creature
 
-| Define                 | Information                |
-| ---------------------- | -------------------------- |
-| CreatureType           | 定义了Creature的类型       |
-| CreatureType type      | 类型                       |
-| String name            | 名字                       |
-| void Echo()            | 生物报名字，如为null则为空 |
-| void SetType()         | 重置生物类型及名字         |
-| boolean HaveCreature() | 判断是否有生物             |
+| Class Name | Class Information                                                 |
+| ---------- | ----------------------------------------------------------------- |
+| Creatrue   | Thing2D的派生类，以下生物的基类，拥有Runnable, Action, Attack接口 |
+| Calabash   | 葫芦娃                                                            |
+| Grandpa    | 爷爷                                                              |
+| Minion     | 小兵                                                              |
+| Scorpion   | 蝎子精                                                            |
+| Snake      | 蛇精                                                              |
 
-### Calabash
+### field
 
-| Define                                                | Information                |
-| ----------------------------------------------------- | -------------------------- |
-| COLOR                                                 | 定义了颜色枚举             |
-| int index                                             | 葫芦娃的排名               |
-| COLOR color                                           | 葫芦娃的颜色               |
-| void SetCalabash(String name, int index, COLOR color) | 重置葫芦娃名字，排序，颜色 |
-| String GetName()                                      | 获得葫芦娃的名字           |
-| String GetColor()                                     | 获得葫芦娃的颜色           |
-| int GetIndex()                                        | 获得葫芦娃的排名           |
+| Class Name | Class Information                                                      |
+| ---------- | ---------------------------------------------------------------------- |
+| Field      | 定义了一个战场，拥有ObserveField, Fighters, BluntYokeVSCraneWing等接口 |
+| Fight      | 定义了一个打架现场，只有双方都存活并且不在打架而且敌对才可以打架       |
+| Ground     | 战场下厚重的大地，是世界的基础                                         |
+| Thing2D    | 二位生物的抽象类                                                       |
+| Tile       | 战场下要有一点草才好看                                                 |
 
-### Grandpa
+### formation
 
-| Define                             | Information             |
-| ---------------------------------- | ----------------------- |
-| Queue calabash                     | 放置葫芦娃              |
-| void bubbleSort()                  | 葫芦娃冒泡排序          |
-| void quickSort(int start, int end) | 葫芦娃快速排序          |
-| void ShuffleCalabash()             | 爷爷弄乱他们            |
-| void SortCalabash()                | 葫芦娃冒泡排序/快速排序 |
-| void CalabashEcho()                | 葫芦娃报名字/颜色       |
+定义了双方各种阵型的接口，令field implements 不同的formation就可以更换阵型
 
-### Scorpion
 
-| Define        | Information            |
-| ------------- | ---------------------- |
-| Queue Minions | 存储了蝎子精和他的喽啰 |
+### record
 
-### Queue
+| Class                  | Information                  |
+| ---------------------- | ---------------------------- |
+| MyDialog               | 选择是否存储当局录像的对话框 |
+| WnetWSreenRecorder     | 接受一个Rectangle录像        |
+| WnetWSreenRecordPlayer | 播放一个录像                 |
 
-| Define                          | Information                  |
-| ------------------------------- | ---------------------------- |
-| ArrayList List                  | 作为队列的存储容器           |
-| int Size()                      | 返回队列大小                 |
-| void EnQueue(Creature creature) | 一个creature入列             |
-| void DeQueue(int index)         | 下标index出队列              |
-| Creature GetCreature(int index) | 返回下标index的生物指针      |
-| void swap(int a, int b)         | 下标为a，b的两个生物互换位置 |
-| void shuffle()                  | 打乱队列                     |
-| void Echo()                     | 输出队列信息                 |
+## 四、使用手册
 
-## 四、代码思路
+- 进入界面后，选择开始游戏后弹出一个对话框选择时候保存当前录像。保存的录像将在当前文件下的records中，并且文件夹名是以时间命名的，用来避免重复。
+- 游戏中，摁下`space键`开始游戏，摁下`r`键游戏重新开始。
+- 主界面选择回放后，请选择你想看的战斗的文件夹，打开的是默认路径，请确保选择正确的战斗文件哦
+- 关闭游戏很简单，选择退出游戏或者简单粗暴的右(左)上角的`x`即可。
 
-套用了第二次作业的内容并将一维扩展为二维，将Queue所面向的类由Calabash抽象为Creature，将本次作业划分为三个模块，main函数，Queue队列的实现，二维生物空间Position的实现。   
-在本试验中，依旧是爷爷负责为葫芦娃们排序和打乱，所以爷爷的类中含有内部类Queue来存储葫芦娃们。
+## 五、代码思路
 
-## 五、心得体会
+- 应用范型和接口来为战场field提供一场战役，他的参赛者们分为两类，爷爷为首的goodCreature，蛇精为首的badCreture，通过绕嘴的自限定来保证他的类型是Creature或者是他的派生类。
+- Creature是Thing2D的派生类，因为在我的世界里，一切生物都是二维的，包括土地上的草皮。
+- Creature实现了行动，进攻等接口，因为我的世界里的生物他们都会打架和移动emmmm。
+- 每一个Creature进攻时，需要先看看是否到了自己的回合，然后在field上找离自己最近的敌人来得到自己的进攻目标，再四处张望一下怎么前进比较快，然后再调用自身方法向那个方向移动。
+- field中有一个God，他保持中立并且作为战场的裁判，每过一会就看一看打架打完了没有，如果有一方阵营全死了，他就宣布胜利者并且打出Completed。
+- 战斗录像是通过录屏操作实现的，每隔一定时间就捕捉战场的信息并且拿小本本记下来，保存成一张png图片仍在records里面。
+- 战斗回放就是让用户自己选择记仇的小本本，然后Frame开始每隔一定时间就把照片替换成下一帧。
+- 在field里为GetDistance特地编写了一下测试用例，用来测试一下计算每一对欢喜冤家的距离是否准确。
+- 战场双方的阵型被我抽象成了一个接口，只需要在attribute里创建你心中的钟意的阵型，然后将field里实现的接口改成你钟意的阵型即可。
+- 战斗开始后，每一个战斗者都被我扔进了线程池里面，为了保证同步问题(在每一个生物眼中，每一个敌人的存活状态都的一样啊！)，为其中涉及到field里实现的ObersveField加上了同步锁。
+- 应用**接口隔离原则**来使自己的代码有了更多复用和补漏的可能，field与creture实现了强关联，双方互相持有一个引用，通过**组合模式**来保证双方的密切关联，再通过割离UI与实现，使代码更加清晰易懂。
 
-在定义二维空间Position的DeleteCreature函数时，一开始报错没反应过来，错误为
+## 六、心得体会
 
-``` java
-Point[i][j].type = CreatureType.Null;
-Point[x][y] = creature;
-```
-
-而我此时Point[i][j]指针所指向的便是我定义的生物，如果之后我再让他们再其他位置，实际上只是将这个目标位置Point[x][y]指向我定义为空的生物。
-
-``` java
-Point[i][j] = new Creature();
-```
-
-经过修改后，如果我想让Point[i][j]的生物离开，只需要给他分配一个新的空间即可，这样也保证了场上只有一个蝎子精等等，维持了一致性原则。
+- 多线程带来的同步问题，还是有点难搞的。
+- 保存战斗记录如果选择保存对象，那么涉及到各种类的指针引用有点烦，所以选择了直接录屏。
+- maven一直无法快乐的打包，最后查了半天发现是自己的pom.xml写的不太好。例如`无法加载huluwa因为找不到主类Main`最后发现是因为pom.xml里面<classmain>填写有误(路径不对)。
+- 觉的本学期对面向对象的理解更加深刻了，以前是因为必须用面向对象语法而面向对象，现在开始思索生物有什么属性，生物有什么方法，什么方法是生物本身不具有的等等。
