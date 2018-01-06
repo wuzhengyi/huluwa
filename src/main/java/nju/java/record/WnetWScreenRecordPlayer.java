@@ -58,7 +58,7 @@ class Screen extends JPanel implements Runnable {
                 if(judeFileExists(new File(path + "\\" + (i+1) + ".png")))
                     i = i + 1;
                 repaint();
-                Thread.sleep(40);//与录像时每秒帧数一致
+                Thread.sleep(40);//与录像时每秒帧数�?�?
 
             } catch (Exception e) {
                 e.printStackTrace();

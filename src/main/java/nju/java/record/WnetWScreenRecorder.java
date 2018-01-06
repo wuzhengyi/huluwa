@@ -43,7 +43,7 @@ public class WnetWScreenRecorder extends Thread{
                 ImageIO.write(image,"png",new File(".\\records\\"+df.format(date) + "\\" + i + ".png"));
 //                fos.close();
                 i = i + 1;
-                Thread.sleep(40);//每秒25帧
+                Thread.sleep(40);//每秒25�?
             }catch(Exception e){
                 e.printStackTrace();
                 System.out.println(e);

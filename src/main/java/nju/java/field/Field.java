@@ -276,7 +276,7 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
                 if(isStart)
                     return;
                 isStart = true;
-                System.out.println("线程开始");
+                System.out.println("线程�?�?");
                 exec = Executors.newCachedThreadPool();
                 for (int i = 0; i < badCreatures.size(); i++) {
                     exec.execute( badCreatures.get(i));
@@ -319,7 +319,7 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
             if(fightIsCompleted())
                 completed = true;
 
-//            /*碰撞检测*/
+//            /*碰撞�?�?*/
 //            boolean allStop = collisionAllDetection();
 //
 //            //反复进攻
