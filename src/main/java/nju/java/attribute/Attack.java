@@ -6,4 +6,5 @@ public interface Attack {
     boolean fightTheEnemy(Creature enemy);
     void moveToDirection(Direction direction);
     void moveToTarget(Creature item, Creature target);
+
 }

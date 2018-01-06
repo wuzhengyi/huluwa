@@ -4,9 +4,10 @@ import nju.java.attribute.Direction;
 import nju.java.attribute.Fighters;
 import nju.java.attribute.ObserveField;
 import nju.java.creature.*;
-import nju.java.formation.*;
+import nju.java.formation.BluntYokeVSCraneWing;
 import nju.java.record.WnetWScreenRecorder;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,7 +16,6 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.swing.*;
 
 public class Field extends JPanel implements ActionListener, ObserveField, Fighters, BluntYokeVSCraneWing {
     public static final int INF = 1000000;
@@ -26,7 +26,6 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
     private int fieldArray[][];
     private WnetWScreenRecorder screenRecorder;
     private ArrayList<Tile> tiles = new ArrayList<Tile>();
-
     private Timer timer = new Timer(100, new TimerListener());
     private int w = 0;
     private int h = 0;
@@ -49,6 +48,94 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
 
     public void setScreenRecorder(WnetWScreenRecorder recorder){
         this.screenRecorder = recorder;
+    }
+
+    public void buildWorld(Graphics g) {
+
+        g.setColor(new Color(250, 240, 170));
+        g.fillRect(0, 0, this.getWidth() + OFFSET, this.getHeight() + OFFSET);
+
+        ArrayList world = new ArrayList();
+
+        world.addAll(tiles);
+        world.addAll(badCreatures);
+        world.addAll(goodCreatures);
+        world.addAll(fight);
+
+        for (int i = 0; i < world.size(); i++) {
+
+            Thing2D item = (Thing2D) world.get(i);
+
+            if (item instanceof Creature) {
+//                if(!item.isDied())
+                g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
+            } else if(item instanceof Fight){
+                if(!((Fight) item).fightIsEnd())
+                    g.drawImage(item.getImage(), item.x(), item.y(), this);
+            }else
+            {
+                g.drawImage(item.getImage(), item.x(), item.y(), this);
+            }
+
+            if (completed) {
+                g.setColor(new Color(0, 0, 0));
+                g.drawString("Completed", 25, 20);
+            }
+
+        }
+    }
+
+    public final void initWorld() {
+        goodCreatures.clear();
+        badCreatures.clear();
+        fight.clear();
+        isStart = false;
+        completed = false;
+
+        int x = 0;
+        int y = 0;
+
+        for (int i = 0; i < formation.length(); i++) {
+            //铺上草地
+
+
+            char item = formation.charAt(i);
+            if (item != '\n')
+                tiles.add(new Tile(x, y));
+            if (item == '\n') {
+                y++;
+                if (this.w < getPointX(x)) {
+                    this.w = getPointX(x);
+                    column = x;
+                }
+                x = 0;
+            } else if (item == '.') {
+                x++;
+            } else if (item == 'c') {
+                x++;
+            } else if (item == '*') {
+                goodCreatures.add(new Calabash(x, y, this));
+                x++;
+            } else if (item == 'g') {
+                goodCreatures.add(new Grandpa(x, y, this));
+                x++;
+            } else if (item == 'n') {
+                badCreatures.add(new Snake(x, y, this));
+                x++;
+            } else if (item == 's') {
+                badCreatures.add(new Scorpion(x, y, this));
+                x++;
+            } else if (item == 'm') {
+                badCreatures.add(new Minion(x, y, this));
+                x++;
+            }
+
+            h = getPointY(y);
+        }
+        row = y;
+        timer.start();
+        initFieldArray();
+
     }
 
     public boolean EnemyInRange(Creature item, Creature target){
@@ -127,61 +214,6 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
 
     public static int getPointY(int y){return y * SPACE + OFFSET;}
 
-    public final void initWorld() {
-
-
-        goodCreatures.clear();
-        badCreatures.clear();
-        fight.clear();
-        isStart = false;
-        completed = false;
-
-        int x = 0;
-        int y = 0;
-
-        for (int i = 0; i < formation.length(); i++) {
-            //铺上草地
-
-
-            char item = formation.charAt(i);
-            if (item != '\n')
-                tiles.add(new Tile(x, y));
-            if (item == '\n') {
-                y++;
-                if (this.w < getPointX(x)) {
-                    this.w = getPointX(x);
-                    column = x;
-                }
-                x = 0;
-            } else if (item == '.') {
-                x++;
-            } else if (item == 'c') {
-                x++;
-            } else if (item == '*') {
-                goodCreatures.add(new Calabash(x, y, this));
-                x++;
-            } else if (item == 'g') {
-                goodCreatures.add(new Grandpa(x, y, this));
-                x++;
-            } else if (item == 'n') {
-                badCreatures.add(new Snake(x, y, this));
-                x++;
-            } else if (item == 's') {
-                badCreatures.add(new Scorpion(x, y, this));
-                x++;
-            } else if (item == 'm') {
-                badCreatures.add(new Minion(x, y, this));
-                x++;
-            }
-
-            h = getPointY(y);
-        }
-        row = y;
-        timer.start();
-        initFieldArray();
-
-    }
-
     public synchronized void initFieldArray(){
 
         fieldArray = new int[column][row];
@@ -220,42 +252,7 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
 //        System.out.println("fight at " + getIndexX(x) + "," + getIndexY(y));
     }
 
-    public void buildWorld(Graphics g) {
 
-        g.setColor(new Color(250, 240, 170));
-        g.fillRect(0, 0, this.getWidth() + OFFSET, this.getHeight() + OFFSET);
-
-        ArrayList world = new ArrayList();
-
-        world.addAll(tiles);
-        world.addAll(badCreatures);
-        world.addAll(goodCreatures);
-        world.addAll(fight);
-
-        for (int i = 0; i < world.size(); i++) {
-
-            Thing2D item = (Thing2D) world.get(i);
-
-            if (item instanceof Creature) {
-//                if(!item.isDied())
-                    g.drawImage(item.getImage(), item.x() + 2, item.y() + 2, this);
-            } else if(item instanceof Fight){
-                if(!((Fight) item).fightIsEnd())
-                    g.drawImage(item.getImage(), item.x(), item.y(), this);
-            }else
-            {
-                g.drawImage(item.getImage(), item.x(), item.y(), this);
-            }
-
-            if (completed) {
-                g.setColor(new Color(0, 0, 0));
-                g.drawString("Completed", 25, 20);
-                if(screenRecorder!=null)
-                    screenRecorder.stop();
-            }
-
-        }
-    }
 
     @Override
     public void paint(Graphics g) {
@@ -282,21 +279,17 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
                 System.out.println("线程开始");
                 exec = Executors.newCachedThreadPool();
                 for (int i = 0; i < badCreatures.size(); i++) {
-                    exec.execute((Creature) badCreatures.get(i));
-//                    Thing2dStart((BadThing2D) badCreatures.get(i), exec);
+                    exec.execute( badCreatures.get(i));
                 }
                 for (int i = 0; i < goodCreatures.size(); i++) {
-//                    Thing2dStart((GoodThing2D) goodCreatures.get(i), exec);
-                    exec.execute((Creature)goodCreatures.get(i));
+                    exec.execute(goodCreatures.get(i));
                 }
-                //                TimeUnit.SECONDS.sleep(5); // Run for a while...
-                //                exec.shutdownNow(); // Interrupt all tasks
             }
             repaint();
         }
     }
 
-    boolean isCompleted(){
+    public boolean fightIsCompleted(){
         boolean goodAllDied = true;
         for(Creature c:goodCreatures){
             if(!c.isDied())
@@ -312,6 +305,9 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
 
     class TimerListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
+            if(completed){
+                return;
+            }
             synchronized (fight){
                 for(int i=0;i<fight.size();i++){
                     fight.get(i).fightIsEnd();
@@ -320,7 +316,7 @@ public class Field extends JPanel implements ActionListener, ObserveField, Fight
 
             initFieldArray();
             repaint();
-            if(isCompleted())
+            if(fightIsCompleted())
                 completed = true;
 
 //            /*碰撞检测*/

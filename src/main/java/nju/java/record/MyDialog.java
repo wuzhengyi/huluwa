@@ -6,9 +6,10 @@ package nju.java.record;
 
 import nju.java.field.Ground;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * @author Brainrain
@@ -53,7 +54,7 @@ public class MyDialog extends JDialog {
         //---- label1 ----
         label1.setText("\u662f\u5426\u8bb0\u5f55\u672c\u5c40\u5bf9\u6218\uff1f");
         contentPane.add(label1);
-        label1.setBounds(75, 55, 205, 55);
+        label1.setBounds(40, 50, 205, 55);
 
         //---- button1 ----
         button1.setText("\u662f(Yes)");
@@ -64,7 +65,7 @@ public class MyDialog extends JDialog {
             }
         });
         contentPane.add(button1);
-        button1.setBounds(new Rectangle(new Point(75, 120), button1.getPreferredSize()));
+        button1.setBounds(new Rectangle(new Point(35, 120), button1.getPreferredSize()));
 
         //---- button2 ----
         button2.setText("\u5426(No)");
@@ -75,7 +76,7 @@ public class MyDialog extends JDialog {
             }
         });
         contentPane.add(button2);
-        button2.setBounds(new Rectangle(new Point(190, 120), button2.getPreferredSize()));
+        button2.setBounds(new Rectangle(new Point(145, 120), button2.getPreferredSize()));
 
         { // compute preferred size
             Dimension preferredSize = new Dimension();
@@ -94,6 +95,9 @@ public class MyDialog extends JDialog {
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
         setLocationRelativeTo(null);
+        label1.setBounds(new Rectangle(30,30,300,30));
+        button1.setBounds(new Rectangle(30,90,80,30));
+        button2.setBounds(new Rectangle(130,90,80,30));
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables

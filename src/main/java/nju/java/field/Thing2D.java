@@ -1,6 +1,6 @@
 package nju.java.field;
 
-import java.awt.Image;
+import java.awt.*;
 
 public abstract class Thing2D {
     private int x;

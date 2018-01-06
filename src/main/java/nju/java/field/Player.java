@@ -1,10 +1,10 @@
 package nju.java.field;
 
 
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
 import java.util.Random;
-import javax.swing.ImageIcon;
 
 public class Player extends Thing2D implements Runnable {
     private Field field;

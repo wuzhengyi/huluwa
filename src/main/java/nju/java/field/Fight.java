@@ -2,9 +2,9 @@ package nju.java.field;
 
 import nju.java.creature.Creature;
 
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
-import javax.swing.ImageIcon;
 
 public class Fight extends Thing2D {
     public int delay;

@@ -1,22 +1,23 @@
-import java.awt.*;
-import java.awt.event.*;
-import java.net.URL;
-import javax.swing.*;
-import net.miginfocom.swing.*;
-import nju.java.field.Ground;
+/*
+ * Created by JFormDesigner on Sat Jan 06 16:40:23 CST 2018
+ */
+
+package nju.java;
+
 import nju.java.record.MyDialog;
 import nju.java.record.WnetWScreenRecordPlayer;
-/*
- * Created by JFormDesigner on Fri Jan 05 13:38:16 CST 2018
- */
 
-
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.net.URL;
 
 /**
- * @author unknown
+ * @author Brainrain
  */
-public class login extends JFrame {
-    public login() {
+public class loginUI extends JFrame {
+    public loginUI() {
         initComponents();
     }
 
@@ -45,46 +46,7 @@ public class login extends JFrame {
 
         //======== this ========
         Container contentPane = getContentPane();
-        contentPane.setLayout(new MigLayout(
-            "hidemode 3",
-            // columns
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]" +
-            "[fill]",
-            // rows
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]" +
-            "[]"));
+        contentPane.setLayout(null);
 
         //---- startGame ----
         startGame.setText("\u5f00\u59cb\u6e38\u620f");
@@ -94,7 +56,8 @@ public class login extends JFrame {
                 startGameMouseClicked(e);
             }
         });
-        contentPane.add(startGame, "cell 1 1 7 2,dock center");
+        contentPane.add(startGame);
+        startGame.setBounds(30, 50, 197, 47);
 
         //---- closeGame ----
         closeGame.setText("\u7ed3\u675f\u6e38\u620f");
@@ -104,7 +67,8 @@ public class login extends JFrame {
                 closeGameMouseClicked(e);
             }
         });
-        contentPane.add(closeGame, "cell 1 4 7 2");
+        contentPane.add(closeGame);
+        closeGame.setBounds(30, 135, 197, closeGame.getPreferredSize().height);
 
         //---- playRecord ----
         playRecord.setText("\u56de\u653e\u5f55\u50cf");
@@ -114,7 +78,22 @@ public class login extends JFrame {
                 playRecordMouseClicked(e);
             }
         });
-        contentPane.add(playRecord, "cell 1 7 7 2");
+        contentPane.add(playRecord);
+        playRecord.setBounds(30, 220, 197, playRecord.getPreferredSize().height);
+
+        { // compute preferred size
+            Dimension preferredSize = new Dimension();
+            for(int i = 0; i < contentPane.getComponentCount(); i++) {
+                Rectangle bounds = contentPane.getComponent(i).getBounds();
+                preferredSize.width = Math.max(bounds.x + bounds.width, preferredSize.width);
+                preferredSize.height = Math.max(bounds.y + bounds.height, preferredSize.height);
+            }
+            Insets insets = contentPane.getInsets();
+            preferredSize.width += insets.right;
+            preferredSize.height += insets.bottom;
+            contentPane.setMinimumSize(preferredSize);
+            contentPane.setPreferredSize(preferredSize);
+        }
         pack();
         setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
@@ -141,6 +120,7 @@ public class login extends JFrame {
         this.setSize(img.getIconWidth(),img.getIconHeight());
         this.setVisible(true);
     }
+
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JButton startGame;
     private JButton closeGame;

@@ -13,4 +13,5 @@ public interface Fighters {
     boolean creatureIsGood(Creature item);
     void initFieldArray();
     void addFight(Creature item1, Creature item2);
+    boolean fightIsCompleted();
 }

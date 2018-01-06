@@ -3,7 +3,7 @@ package nju.java.field;
 
 import nju.java.record.WnetWScreenRecorder;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 
 public final class Ground extends JFrame {
@@ -25,8 +25,6 @@ public final class Ground extends JFrame {
         setLocationRelativeTo(null);
         System.out.println(this.getX());
         setTitle("Ground");
-
-
 
     }
 

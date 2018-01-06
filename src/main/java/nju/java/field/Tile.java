@@ -1,10 +1,8 @@
 package nju.java.field;
 
-import nju.java.field.Thing2D;
-
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
-import javax.swing.ImageIcon;
 
 public class Tile extends Thing2D {
     public Tile(int x, int y) {

@@ -3,36 +3,39 @@ JFDML JFormDesigner: "6.0.2.0.116" Java: "1.8.0_152-release" encoding: "UTF-8"
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
-		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-			"$rowConstraints": "[][][][][][][][][][][][][][][][]"
-		} ) {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class com.jformdesigner.runtime.NullLayout ) ) {
 			name: "this"
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "startGame"
 				"text": "开始游戏"
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "startGameMouseClicked", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 1 1 7 2,dock center"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"width": 197
+				"height": 47
+				"x": 30
+				"y": 50
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "closeGame"
 				"text": "结束游戏"
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "closeGameMouseClicked", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 1 4 7 2"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"width": 197
+				"x": 30
+				"y": 135
 			} )
 			add( new FormComponent( "javax.swing.JButton" ) {
 				name: "playRecord"
 				"text": "回放录像"
 				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "playRecordMouseClicked", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 1 7 7 2"
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.NullConstraints ) {
+				"width": 197
+				"x": 30
+				"y": 220
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 14, 10 )
-			"size": new java.awt.Dimension( 481, 403 )
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 456, 360 )
 		} )
 	}
 }

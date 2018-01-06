@@ -1,7 +1,8 @@
-import nju.java.*;
+import nju.java.loginUI;
+
 public class Main {
     public static void main(String[] args) {
-        login t = new login();
+        loginUI t = new loginUI();
         t.show();
     }
 }
